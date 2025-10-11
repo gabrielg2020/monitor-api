@@ -1,11 +1,32 @@
 package main
 
 import (
+	"database/sql"
+	"os"
+
+	"github.com/gabrielg2020/monitor-page/handlers"
+	"github.com/gabrielg2020/monitor-page/services"
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 	engine := setupEngine()
+
+	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		panic(err)
+	}
+
+	// Initialize services and handlers
+	pushService := services.NewPushService(db)
+	pushHandler := handlers.NewPushHandler(pushService)
 
 	// Set up endpoints
 	engine.GET("/", func(ctx *gin.Context) {
@@ -14,6 +35,14 @@ func main() {
 			"developer": "Gabriel Guimaraes",
 		})
 	})
+
+	apiGroup := engine.Group("/api")
+	{
+		apiGroup.GET("/", func(ctx *gin.Context) {
+			ctx.JSON(200, gin.H{"message": "you shouldn't be here!"})
+		})
+		apiGroup.POST("/push", pushHandler.HandlePush)
+	}
 
 	// Start the engine
 	if err := engine.Run(":8080"); err != nil {
