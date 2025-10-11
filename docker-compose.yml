@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    env_file:
+      - ".env"
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ../monitor-db:/app/data
+    environment:
+      - DB_PATH=/app/data/monitoring.db
