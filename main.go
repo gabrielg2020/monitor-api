@@ -45,7 +45,8 @@ func main() {
 	}
 
 	// Start the engine
-	if err := engine.Run(":8080"); err != nil {
+	port := os.Getenv("PORT")
+	if err := engine.Run(":" + port); err != nil {
 		panic(err)
 	}
 }
