@@ -50,7 +50,19 @@ The API will be available at `http://localhost:8191` (or the host machine's IP a
 
 ### Available Endpoints
 
-- `POST /api/push` - Push new monitoring data to the database.
+- `GET /health` - Check the health status of the API.
+  - Response:
+    ```json
+    {
+      "checks": {
+        "database": "healthy"
+      },
+      "status": "healthy",
+      "timestamp": "2025-10-16T23:52:51+01:00"
+     }
+    ```
+
+- `POST /api/v1/metrics` - Push new monitoring data to the database.
   - Request Body (JSON):
     ```json
     {
