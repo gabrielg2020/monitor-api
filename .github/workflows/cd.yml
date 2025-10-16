@@ -1,0 +1,13 @@
+name: CD
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Release Workflow
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/release.yaml
