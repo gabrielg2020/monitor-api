@@ -30,8 +30,8 @@ func main() {
 	}
 
 	// Initialize services and handlers
-	pushService := services.NewPushService(db)
-	pushHandler := handlers.NewPushHandler(pushService)
+	metricPushService := services.NewMetricPushService(db)
+	metricPushHandler := handlers.NewMetricPushHandler(metricPushService)
 
 	healthService := services.NewHealthService(db)
 	healthHandler := handlers.NewHealthHandler(healthService)
@@ -43,7 +43,7 @@ func main() {
 	{
 		metrics := v1.Group("/metrics")
 		{
-			metrics.POST("", pushHandler.HandlePush)
+			metrics.POST("", metricPushHandler.HandleMetricPush)
 		}
 	}
 
