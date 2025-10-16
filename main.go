@@ -34,19 +34,12 @@ func main() {
 	pushHandler := handlers.NewPushHandler(pushService)
 
 	// Set up endpoints
-	engine.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"message":   "Hello!",
-			"developer": "Gabriel Guimaraes",
-		})
-	})
-
-	apiGroup := engine.Group("/api")
+	v1 := engine.Group("/api/v1")
 	{
-		apiGroup.GET("/", func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{"message": "you shouldn't be here!"})
-		})
-		apiGroup.POST("/push", pushHandler.HandlePush)
+		metrics := v1.Group("/metrics")
+		{
+			metrics.POST("", pushHandler.HandlePush)
+		}
 	}
 
 	// Start the engine
