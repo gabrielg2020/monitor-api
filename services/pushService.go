@@ -16,7 +16,7 @@ func NewPushService(con *sql.DB) *PushService {
 	}
 }
 
-func (p *PushService) PushRecord(record *entities.SystemMetric) error {
+func (service *PushService) PushRecord(record *entities.SystemMetric) error {
 	// Insert into database
 	insertSQL := `
     INSERT INTO system_metrics (
@@ -25,7 +25,7 @@ func (p *PushService) PushRecord(record *entities.SystemMetric) error {
     	disk_usage_percent, disk_total_bytes, disk_used_bytes, disk_available_bytes
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	_, err := p.db.Exec(insertSQL,
+	_, err := service.db.Exec(insertSQL,
 		record.HostID,
 		record.Timestamp,
 		record.CPUUsage,

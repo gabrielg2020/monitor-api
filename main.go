@@ -33,7 +33,12 @@ func main() {
 	pushService := services.NewPushService(db)
 	pushHandler := handlers.NewPushHandler(pushService)
 
+	healthService := services.NewHealthService(db)
+	healthHandler := handlers.NewHealthHandler(healthService)
+
 	// Set up endpoints
+	engine.GET("/health", healthHandler.HandleHealth)
+
 	v1 := engine.Group("/api/v1")
 	{
 		metrics := v1.Group("/metrics")
