@@ -16,7 +16,7 @@ func NewMetricPushService(con *sql.DB) *MetricPushService {
 	}
 }
 
-func (service *MetricPushService) MetricPushService(record *entities.SystemMetric) error {
+func (service *MetricPushService) PushMetric(record *entities.SystemMetric) error {
 	// Insert into database
 	insertSQL := `
     INSERT INTO system_metrics (
