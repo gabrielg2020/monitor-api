@@ -39,6 +39,9 @@ func main() {
 	metricGetService := services.NewMetricGetService(db)
 	metricGetHandler := handlers.NewMetricGetHandler(metricGetService)
 
+	metricLatestService := services.NewMetricLatestService(db)
+	metricLatestHandler := handlers.NewMetricLatestHandler(metricLatestService)
+
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
 
@@ -48,6 +51,7 @@ func main() {
 		{
 			metrics.POST("", metricPushHandler.HandleMetricPush)
 			metrics.GET("", metricGetHandler.HandleMetricGet)
+			metrics.GET("/latest", metricLatestHandler.HandleMetricLatest)
 		}
 	}
 

@@ -53,9 +53,6 @@ func (service *MetricGetService) GetMetrics() ([]entities.SystemMetric, error) {
 	querySQL += " LIMIT ?"
 	args = append(args, service.requestQuery.Limit)
 
-	fmt.Println(querySQL)
-	fmt.Println(args)
-
 	rows, err := service.db.Query(querySQL, args...)
 	if err != nil {
 		return nil, err
@@ -66,10 +63,6 @@ func (service *MetricGetService) GetMetrics() ([]entities.SystemMetric, error) {
 			panic(err)
 		}
 	}(rows)
-
-	columns, _ := rows.Columns()
-	fmt.Println("Columns returned:", columns)
-	fmt.Println("Column count:", len(columns))
 
 	var metrics []entities.SystemMetric
 	for rows.Next() {
