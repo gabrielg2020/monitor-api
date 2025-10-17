@@ -8,7 +8,7 @@ type SystemMetric struct {
 	// TODO
 	// Change time.Time to int64 (unix timestamp) for easier JSON serialization
 	// Need to change database schema before doing this...
-	Timestamp            time.Time `json:"-"`
+	Timestamp            time.Time `json:"timestamp" db:"timestamp"`
 	CPUUsage             float64   `json:"cpu_usage" db:"cpu_usage"`
 	MemoryUsagePercent   float64   `json:"memory_usage_percent" db:"memory_usage_percent"`
 	MemoryTotalBytes     int64     `json:"memory_total_bytes" db:"memory_total_bytes"`

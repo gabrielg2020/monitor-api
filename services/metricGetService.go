@@ -2,7 +2,6 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/gabrielg2020/monitor-page/entities"
 )
@@ -89,8 +88,6 @@ func (service *MetricGetService) GetMetrics() ([]entities.SystemMetric, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
-	fmt.Println(metrics)
 
 	return metrics, nil
 }
