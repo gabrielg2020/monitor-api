@@ -26,30 +26,21 @@ func (handler *HostGetHandler) HandleHostGet(ctx *gin.Context) {
 		return
 	}
 
-	if queryParams.ID == 0 && queryParams.Hostname == "" && queryParams.IPAddress == "" {
-		ctx.JSON(400, gin.H{
-			"message": "At least one query parameter (id, hostname, ip_address) must be provided",
-		})
-		return
-	}
-
 	handler.service.SetQueryParams(&queryParams)
 
-	host, err := handler.service.GetHost()
+	hosts, err := handler.service.GetHost()
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "Failed to retrieve host",
 			"error":   err.Error(),
 		})
 		return
-	} else if host == nil {
-		ctx.JSON(404, gin.H{
-			"message": "Host not found",
-		})
-		return
 	}
 
 	ctx.JSON(200, gin.H{
-		"host": host,
+		"hosts": hosts,
+		"meta": gin.H{
+			"count": len(hosts),
+		},
 	})
 }

@@ -21,7 +21,7 @@ func (service *HostGetService) SetQueryParams(params *entities.HostQueryParams) 
 	service.requestQuery = params
 }
 
-func (service *HostGetService) GetHost() (*entities.Host, error) {
+func (service *HostGetService) GetHost() ([]entities.Host, error) {
 	querySQL := `
 		SELECT id, hostname, ip_address, role
 		FROM hosts
@@ -56,21 +56,24 @@ func (service *HostGetService) GetHost() (*entities.Host, error) {
 		}
 	}(rows)
 
-	var host entities.Host
-	if rows.Next() {
-		err := rows.Scan(
+	var hosts []entities.Host
+	for rows.Next() {
+		var host entities.Host
+		if err := rows.Scan(
 			&host.ID,
 			&host.Hostname,
 			&host.IPAddress,
 			&host.Role,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
-		// Return the first matching host
-		return &host, nil
+
+		hosts = append(hosts, host)
 	}
 
-	// No matching host found
-	return nil, sql.ErrNoRows
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return hosts, nil
 }
