@@ -46,7 +46,7 @@ func main() {
 	hostPushHandler := handlers.NewHostPushHandler(hostPushService)
 
 	hostGetService := services.NewHostGetService(db)
-	hostPushHandler := handlers.NewHostGetHandler(hostGetService)
+	hostGetHandler := handlers.NewHostGetHandler(hostGetService)
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
@@ -62,7 +62,7 @@ func main() {
 		hosts := v1.Group("/hosts")
 		{
 			hosts.POST("", hostPushHandler.HandleHostPush)
-			hosts.GET("", hostPushHandler.HandleHostGet)
+			hosts.GET("", hostGetHandler.HandleHostGet)
 		}
 	}
 

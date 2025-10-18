@@ -26,6 +26,13 @@ func (handler *HostGetHandler) HandleHostGet(ctx *gin.Context) {
 		return
 	}
 
+	if queryParams.ID == 0 && queryParams.Hostname == "" && queryParams.IPAddress == "" {
+		ctx.JSON(400, gin.H{
+			"message": "At least one query parameter (id, hostname, ip_address) must be provided",
+		})
+		return
+	}
+
 	handler.service.SetQueryParams(&queryParams)
 
 	host, err := handler.service.GetHost()
