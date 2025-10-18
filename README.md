@@ -96,7 +96,7 @@ The API will be available at `http://localhost:8191` (or the host machine's IP a
     - `limit` (optional): Limit the number of records returned (default: 100).
     - `order` (optional): Order of records by timestamp, either `asc` or `desc` (default: `desc`).
 
-#### - `GET /api/v1/metrics` - grab all monitoring data from the database.
+#### - `GET /api/v1/metrics/latest` - grab the latest monitoring data from the database.
 - Response:
   ```json
   {
