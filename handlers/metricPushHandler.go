@@ -27,13 +27,19 @@ func (handler *MetricPushHandler) HandleMetricPush(ctx *gin.Context) {
 			"error":   err.Error(),
 		})
 		return
-	} else if err := handler.service.PushMetric(&requestBody.Record); err != nil {
+	}
+
+	id, err := handler.service.PushMetric(&requestBody.Record)
+	if err != nil {
 		ctx.JSON(500, gin.H{
-			"message": "Failed to push record",
+			"message": "Failed to push metric record",
 			"error":   err.Error(),
 		})
 		return
 	}
 
-	ctx.JSON(201, gin.H{"message": "Records pushed successfully"})
+	ctx.JSON(201, gin.H{
+		"message": "Host pushed successfully",
+		"id":      id,
+	})
 }

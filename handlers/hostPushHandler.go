@@ -27,7 +27,10 @@ func (handler *HostPushHandler) HandleHostPush(ctx *gin.Context) {
 			"error":   err.Error(),
 		})
 		return
-	} else if err := handler.service.PushHost(&requestBody.Host); err != nil {
+	}
+
+	id, err := handler.service.PushHost(&requestBody.Host)
+	if err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "Failed to push host",
 			"error":   err.Error(),
@@ -35,5 +38,8 @@ func (handler *HostPushHandler) HandleHostPush(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(201, gin.H{"message": "Host pushed successfully"})
+	ctx.JSON(201, gin.H{
+		"message": "Host pushed successfully",
+		"id":      id,
+	})
 }

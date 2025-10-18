@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/gabrielg2020/monitor-page/entities"
@@ -17,31 +18,62 @@ func NewHostPushService(con *sql.DB) *HostPushService {
 	}
 }
 
-func (service *HostPushService) PushHost(host *entities.Host) error {
-	// Insert into database
-	insertSQL := `
-	INSERT INTO hosts (
-	    hostname, ip_address, role, created_at, last_seen
-	) VALUES (?, ?, ?, ?, ?)
-	ON CONFLICT(hostname) DO UPDATE SET
-		ip_address=excluded.ip_address,
-		role=excluded.role,
-		last_seen=excluded.last_seen;`
-
-	// Use current time for CreatedAt and LastSeen
+func (service *HostPushService) PushHost(host *entities.Host) (int64, error) {
+	// First try getting the host by hostname or IP to avoid duplicates
+	var existingHostID int64
 	timestamp := time.Now().Unix()
+	querySQL := `
+		SELECT id
+		FROM hosts
+		WHERE hostname = ? OR ip_address = ?`
 
-	_, err := service.db.Exec(insertSQL,
-		host.Hostname,
-		host.IPAddress,
+	err := service.db.QueryRow(querySQL, host.Hostname, host.IPAddress).Scan(&existingHostID)
+
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return 0, err
+	}
+
+	// If no existing host, insert new
+	if errors.Is(err, sql.ErrNoRows) {
+		insertSQL := `
+			INSERT INTO hosts (hostname, ip_address, role, created_at, last_seen)
+			VALUES (?, ?, ?, ?, ?)`
+
+		result, err := service.db.Exec(insertSQL,
+			host.Hostname,
+			host.IPAddress,
+			host.Role,
+			timestamp,
+			timestamp,
+		)
+
+		if err != nil {
+			return 0, err
+		}
+
+		lastInsertID, err := result.LastInsertId()
+		if err != nil {
+			return 0, err
+		}
+
+		return lastInsertID, nil
+	}
+
+	// If existing host found, update its role and last_seen
+	updateSQL := `
+		UPDATE hosts
+		SET role = ?, last_seen = ?
+		WHERE id = ?`
+
+	_, err = service.db.Exec(updateSQL,
 		host.Role,
 		timestamp,
-		timestamp,
+		existingHostID,
 	)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return existingHostID, nil
 }
