@@ -96,30 +96,30 @@ The API will be available at `http://localhost:8191` (or the host machine's IP a
     - `limit` (optional): Limit the number of records returned (default: 100).
     - `order` (optional): Order of records by timestamp, either `asc` or `desc` (default: `desc`).
 
-#### - `GET /api/v1/metrics/latest` - grab the latest monitoring data from the database.
-    - Response:
-      ```json
-      {
-        "metric": {
-          "id": 1,
-          "host_id": 1,
-          "timestamp": 1760663031,
-          "cpu_usage": 45.5,
-          "memory_usage_percent": 68.2,
-          "memory_total_bytes": 16777216000,
-          "memory_used_bytes": 11442954240,
-          "memory_available_bytes": 5334261760,
-          "disk_usage_percent": 72.3,
-          "disk_total_bytes": 512110190592,
-          "disk_used_bytes": 370191697920,
-          "disk_available_bytes": 141918492672
-        }
-      }
-      ```
-    - Query Parameters:
-        - `host_id` (optional): Filter records by host ID.
+#### - `GET /api/v1/metrics` - grab all monitoring data from the database.
+- Response:
+  ```json
+  {
+    "metric": {
+      "id": 1,
+      "host_id": 1,
+      "timestamp": 1760663031,
+      "cpu_usage": 45.5,
+      "memory_usage_percent": 68.2,
+      "memory_total_bytes": 16777216000,
+      "memory_used_bytes": 11442954240,
+      "memory_available_bytes": 5334261760,
+      "disk_usage_percent": 72.3,
+      "disk_total_bytes": 512110190592,
+      "disk_used_bytes": 370191697920,
+      "disk_available_bytes": 141918492672
+     }
+  }
+  ```
+- Query Parameters:
+    - `host_id` (optional): Filter records by host ID.
 
-- `POST /api/v1/metrics` - Push new monitoring data to the database.
+#### - `POST /api/v1/metrics` - Push new monitoring data to the database.
   - Request Body (JSON):
     ```json
     {
