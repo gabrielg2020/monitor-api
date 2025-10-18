@@ -35,5 +35,5 @@ func (handler *MetricPushHandler) HandleMetricPush(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Records pushed successfully"})
+	ctx.JSON(201, gin.H{"message": "Records pushed successfully"})
 }
