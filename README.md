@@ -75,6 +75,23 @@ The API will be available at `http://localhost:8191` (or the host machine's IP a
   }
   ```
 
+#### - `GET /api/v1/hosts` - grab a queried host from databse.
+- Response:
+  ```json
+  {
+    "host": {
+      "id": 1,
+      "hostname": "test_hostname",
+      "ip_address": "192.168.0.1",
+      "role": "test_host"
+    }
+  }
+  ```
+- Query Parameters (one is required):
+    - `id` (optional): Filter host by ID.
+    - `hostname` (optional): Filter host by hostname.
+    - `ip_address` (optional): Filter host by IP address.
+
 #### - `GET /api/v1/metrics` - grab all monitoring data from the database.
   - Response:
     ```json
