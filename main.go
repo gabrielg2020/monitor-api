@@ -33,8 +33,8 @@ func main() {
 	healthService := services.NewHealthService(db)
 	healthHandler := handlers.NewHealthHandler(healthService)
 
-	metricPushService := services.NewMetricPushService(db)
-	metricPushHandler := handlers.NewMetricPushHandler(metricPushService)
+	metricPostService := services.NewMetricPostService(db)
+	metricPostHandler := handlers.NewMetricPostHandler(metricPostService)
 
 	metricGetService := services.NewMetricGetService(db)
 	metricGetHandler := handlers.NewMetricGetHandler(metricGetService)
@@ -42,8 +42,8 @@ func main() {
 	metricLatestService := services.NewMetricLatestService(db)
 	metricLatestHandler := handlers.NewMetricLatestHandler(metricLatestService)
 
-	hostPushService := services.NewHostPushService(db)
-	hostPushHandler := handlers.NewHostPushHandler(hostPushService)
+	hostPostService := services.NewHostPostService(db)
+	hostPostHandler := handlers.NewHostPostHandler(hostPostService)
 
 	hostGetService := services.NewHostGetService(db)
 	hostGetHandler := handlers.NewHostGetHandler(hostGetService)
@@ -55,13 +55,13 @@ func main() {
 	{
 		metrics := v1.Group("/metrics")
 		{
-			metrics.POST("", metricPushHandler.HandleMetricPush)
+			metrics.POST("", metricPostHandler.HandleMetricPost)
 			metrics.GET("", metricGetHandler.HandleMetricGet)
 			metrics.GET("/latest", metricLatestHandler.HandleMetricLatest)
 		}
 		hosts := v1.Group("/hosts")
 		{
-			hosts.POST("", hostPushHandler.HandleHostPush)
+			hosts.POST("", hostPostHandler.HandleHostPost)
 			hosts.GET("", hostGetHandler.HandleHostGet)
 		}
 	}

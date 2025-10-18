@@ -6,17 +6,17 @@ import (
 	"github.com/gabrielg2020/monitor-page/entities"
 )
 
-type MetricPushService struct {
+type MetricPostService struct {
 	db *sql.DB
 }
 
-func NewMetricPushService(con *sql.DB) *MetricPushService {
-	return &MetricPushService{
+func NewMetricPostService(con *sql.DB) *MetricPostService {
+	return &MetricPostService{
 		db: con,
 	}
 }
 
-func (service *MetricPushService) PushMetric(record *entities.SystemMetric) error {
+func (service *MetricPostService) PostMetric(record *entities.SystemMetric) (int64, error) {
 	// Insert into database
 	insertSQL := `
     INSERT INTO system_metrics (
@@ -25,7 +25,7 @@ func (service *MetricPushService) PushMetric(record *entities.SystemMetric) erro
     	disk_usage_percent, disk_total_bytes, disk_used_bytes, disk_available_bytes
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	_, err := service.db.Exec(insertSQL,
+	result, err := service.db.Exec(insertSQL,
 		record.HostID,
 		record.Timestamp,
 		record.CPUUsage,
@@ -40,8 +40,14 @@ func (service *MetricPushService) PushMetric(record *entities.SystemMetric) erro
 	)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	// Get the last inserted id
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return lastInsertID, nil
 }
