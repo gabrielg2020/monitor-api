@@ -7,7 +7,8 @@ import (
 )
 
 type MetricLatestService struct {
-	db *sql.DB
+	db           *sql.DB
+	requestQuery *entities.MetricLatestQueryParams
 }
 
 func NewMetricLatestService(con *sql.DB) *MetricLatestService {
@@ -16,7 +17,11 @@ func NewMetricLatestService(con *sql.DB) *MetricLatestService {
 	}
 }
 
-func (service *MetricLatestService) GetLatestMetrics(hostID *int64) (*entities.SystemMetric, error) {
+func (service *MetricLatestService) SetQueryParams(params *entities.MetricLatestQueryParams) {
+	service.requestQuery = params
+}
+
+func (service *MetricLatestService) GetLatestMetrics() (*entities.SystemMetric, error) {
 	querySQL := `
         SELECT id, host_id, timestamp, cpu_usage, memory_usage_percent,
                memory_total_bytes, memory_used_bytes, memory_available_bytes,
@@ -26,9 +31,9 @@ func (service *MetricLatestService) GetLatestMetrics(hostID *int64) (*entities.S
 	var args []interface{}
 
 	// Add WHERE clauses conditionally
-	if hostID != nil {
+	if service.requestQuery.HostID != nil {
 		querySQL += " WHERE host_id = ?"
-		args = append(args, *hostID)
+		args = append(args, *service.requestQuery.HostID)
 	}
 
 	querySQL += " ORDER BY timestamp DESC LIMIT 1"

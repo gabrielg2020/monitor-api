@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -29,8 +28,6 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 		})
 		return
 	}
-
-	fmt.Printf("Host ID =  %v\n", queryParams.HostID)
 
 	// Set Defaults
 	if queryParams.Limit == 0 {
@@ -69,13 +66,13 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 			"error":   err.Error(),
 		})
 		return
-	} else {
-		ctx.JSON(200, gin.H{
-			"records": records,
-			"meta": gin.H{
-				"count": len(records),
-				"limit": queryParams.Limit,
-			},
-		})
 	}
+
+	ctx.JSON(200, gin.H{
+		"records": records,
+		"meta": gin.H{
+			"count": len(records),
+			"limit": queryParams.Limit,
+		},
+	})
 }

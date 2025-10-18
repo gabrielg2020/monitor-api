@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"fmt"
-
+	"github.com/gabrielg2020/monitor-page/entities"
 	"github.com/gabrielg2020/monitor-page/services"
 	"github.com/gin-gonic/gin"
 )
@@ -18,21 +17,18 @@ func NewMetricLatestHandler(latestService *services.MetricLatestService) *Metric
 }
 
 func (handler *MetricLatestHandler) HandleMetricLatest(ctx *gin.Context) {
-	var hostID *int64
-	if hostIDStr := ctx.Query("host_id"); hostIDStr != "" {
-		var parsedHostID int64
-		_, err := fmt.Sscanf(hostIDStr, "%d", &parsedHostID)
-		if err != nil {
-			ctx.JSON(400, gin.H{
-				"message": "Invalid host_id parameter",
-				"error":   err.Error(),
-			})
-			return
-		}
-		hostID = &parsedHostID
+	var queryParams entities.MetricLatestQueryParams
+	if err := ctx.ShouldBindQuery(&queryParams); err != nil {
+		ctx.JSON(400, gin.H{
+			"message": "Invalid query parameters",
+			"error":   err.Error(),
+		})
+		return
 	}
 
-	metric, err := handler.service.GetLatestMetrics(hostID)
+	handler.service.SetQueryParams(&queryParams)
+
+	metric, err := handler.service.GetLatestMetrics()
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "Failed to retrieve latest metric",
