@@ -61,6 +61,19 @@ The API will be available at `http://localhost:8191` (or the host machine's IP a
       "timestamp": "2025-10-16T23:52:51+01:00"
      }
     ```
+    
+#### - `POST /api/v1/hosts` - Push new host to the database.
+- Request Body (JSON):
+  ```json
+  {
+    "host": {
+      "id": <integer>,
+      "hostname": <string>,
+      "ip_address": <string>,
+      "role": <string>,
+    }
+  }
+  ```
 
 #### - `GET /api/v1/metrics` - grab all monitoring data from the database.
   - Response:
