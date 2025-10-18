@@ -8,17 +8,17 @@ import (
 	"github.com/gabrielg2020/monitor-page/entities"
 )
 
-type HostPushService struct {
+type HostPostService struct {
 	db *sql.DB
 }
 
-func NewHostPushService(con *sql.DB) *HostPushService {
-	return &HostPushService{
+func NewHostPostService(con *sql.DB) *HostPostService {
+	return &HostPostService{
 		db: con,
 	}
 }
 
-func (service *HostPushService) PushHost(host *entities.Host) (int64, error) {
+func (service *HostPostService) PostHost(host *entities.Host) (int64, error) {
 	// First try getting the host by hostname or IP to avoid duplicates
 	var existingHostID int64
 	timestamp := time.Now().Unix()

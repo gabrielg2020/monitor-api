@@ -6,17 +6,17 @@ import (
 	"github.com/gabrielg2020/monitor-page/entities"
 )
 
-type MetricPushService struct {
+type MetricPostService struct {
 	db *sql.DB
 }
 
-func NewMetricPushService(con *sql.DB) *MetricPushService {
-	return &MetricPushService{
+func NewMetricPostService(con *sql.DB) *MetricPostService {
+	return &MetricPostService{
 		db: con,
 	}
 }
 
-func (service *MetricPushService) PushMetric(record *entities.SystemMetric) (int64, error) {
+func (service *MetricPostService) PostMetric(record *entities.SystemMetric) (int64, error) {
 	// Insert into database
 	insertSQL := `
     INSERT INTO system_metrics (

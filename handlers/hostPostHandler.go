@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HostPushHandler struct {
-	service *services.HostPushService
+type HostPostHandler struct {
+	service *services.HostPostService
 }
 
-func NewHostPushHandler(pushService *services.HostPushService) *HostPushHandler {
-	return &HostPushHandler{
-		service: pushService,
+func NewHostPostHandler(postService *services.HostPostService) *HostPostHandler {
+	return &HostPostHandler{
+		service: postService,
 	}
 }
 
-func (handler *HostPushHandler) HandleHostPush(ctx *gin.Context) {
+func (handler *HostPostHandler) HandleHostPost(ctx *gin.Context) {
 	var requestBody struct {
 		Host entities.Host `json:"host"`
 	}
@@ -29,17 +29,17 @@ func (handler *HostPushHandler) HandleHostPush(ctx *gin.Context) {
 		return
 	}
 
-	id, err := handler.service.PushHost(&requestBody.Host)
+	id, err := handler.service.PostHost(&requestBody.Host)
 	if err != nil {
 		ctx.JSON(500, gin.H{
-			"message": "Failed to push host",
+			"message": "Failed to post host",
 			"error":   err.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(201, gin.H{
-		"message": "Host pushed successfully",
+		"message": "Host posted successfully",
 		"id":      id,
 	})
 }
