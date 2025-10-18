@@ -42,6 +42,9 @@ func main() {
 	metricLatestService := services.NewMetricLatestService(db)
 	metricLatestHandler := handlers.NewMetricLatestHandler(metricLatestService)
 
+	hostPushService := services.NewHostPushService(db)
+	hostPushHandler := handlers.NewHostPushHandler(hostPushService)
+
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
 
@@ -52,6 +55,10 @@ func main() {
 			metrics.POST("", metricPushHandler.HandleMetricPush)
 			metrics.GET("", metricGetHandler.HandleMetricGet)
 			metrics.GET("/latest", metricLatestHandler.HandleMetricLatest)
+		}
+		hosts := v1.Group("/hosts")
+		{
+			hosts.POST("", hostPushHandler.HandleHostPush)
 		}
 	}
 
