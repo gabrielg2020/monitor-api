@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/gabrielg2020/monitor-page/entities"
 )
@@ -27,12 +28,15 @@ func (service *HostPushService) PushHost(host *entities.Host) error {
 		role=excluded.role,
 		last_seen=excluded.last_seen;`
 
+	// Use current time for CreatedAt and LastSeen
+	timestamp := time.Now().Unix()
+
 	_, err := service.db.Exec(insertSQL,
 		host.Hostname,
 		host.IPAddress,
 		host.Role,
-		host.CreatedAt,
-		host.LastSeen,
+		timestamp,
+		timestamp,
 	)
 
 	if err != nil {
