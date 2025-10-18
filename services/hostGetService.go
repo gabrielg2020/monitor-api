@@ -6,22 +6,22 @@ import (
 	"github.com/gabrielg2020/monitor-page/entities"
 )
 
-type HostPushService struct {
+type HostGetService struct {
 	db           *sql.DB
 	requestQuery *entities.HostQueryParams
 }
 
-func NewHostPushService(con *sql.DB) *HostPushService {
-	return &HostPushService{
+func NewHostGetService(con *sql.DB) *HostGetService {
+	return &HostGetService{
 		db: con,
 	}
 }
 
-func (service *HostPushService) SetQueryParams(params *entities.HostQueryParams) {
+func (service *HostGetService) SetQueryParams(params *entities.HostQueryParams) {
 	service.requestQuery = params
 }
 
-func (service *HostPushService) GetHost() (*entities.Host, error) {
+func (service *HostGetService) GetHost() (*entities.Host, error) {
 	querySQL := `
 		SELECT id, hostname, ip_address
 		FROM hosts
