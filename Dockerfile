@@ -7,14 +7,14 @@ RUN apk add --no-cache gcc musl-dev sqlite-dev
 WORKDIR /build
 
 # Copy go mod files
-COPY go.* ./
-RUN go mod download || true
+COPY go.mod go.sum ./
+RUN go mod download
 
 # Copy the source code
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=1 go build -o app main.go
+RUN CGO_ENABLED=1 go build -ldflags="-w -s" -o app main.go
 
 # Final stage
 FROM alpine:latest

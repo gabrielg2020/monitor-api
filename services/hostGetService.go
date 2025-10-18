@@ -23,7 +23,7 @@ func (service *HostGetService) SetQueryParams(params *entities.HostQueryParams) 
 
 func (service *HostGetService) GetHost() (*entities.Host, error) {
 	querySQL := `
-		SELECT id, hostname, ip_address
+		SELECT id, hostname, ip_address, role
 		FROM hosts
 		WHERE 1=1` // Dummy WHERE clause for easier appending
 
@@ -62,6 +62,7 @@ func (service *HostGetService) GetHost() (*entities.Host, error) {
 			&host.ID,
 			&host.Hostname,
 			&host.IPAddress,
+			&host.Role,
 		)
 		if err != nil {
 			return nil, err
