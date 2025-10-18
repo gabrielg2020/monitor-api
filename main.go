@@ -30,11 +30,17 @@ func main() {
 	}
 
 	// Initialize services and handlers
-	pushService := services.NewPushService(db)
-	pushHandler := handlers.NewPushHandler(pushService)
-
 	healthService := services.NewHealthService(db)
 	healthHandler := handlers.NewHealthHandler(healthService)
+
+	metricPushService := services.NewMetricPushService(db)
+	metricPushHandler := handlers.NewMetricPushHandler(metricPushService)
+
+	metricGetService := services.NewMetricGetService(db)
+	metricGetHandler := handlers.NewMetricGetHandler(metricGetService)
+
+	metricLatestService := services.NewMetricLatestService(db)
+	metricLatestHandler := handlers.NewMetricLatestHandler(metricLatestService)
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
@@ -43,7 +49,9 @@ func main() {
 	{
 		metrics := v1.Group("/metrics")
 		{
-			metrics.POST("", pushHandler.HandlePush)
+			metrics.POST("", metricPushHandler.HandleMetricPush)
+			metrics.GET("", metricGetHandler.HandleMetricGet)
+			metrics.GET("/latest", metricLatestHandler.HandleMetricLatest)
 		}
 	}
 

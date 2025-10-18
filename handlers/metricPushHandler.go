@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PushRecordHandler struct {
-	service *services.PushService
+type MetricPushHandler struct {
+	service *services.MetricPushService
 }
 
-func NewPushHandler(pushService *services.PushService) *PushRecordHandler {
-	return &PushRecordHandler{
+func NewMetricPushHandler(pushService *services.MetricPushService) *MetricPushHandler {
+	return &MetricPushHandler{
 		service: pushService,
 	}
 }
 
-func (handler *PushRecordHandler) HandlePush(ctx *gin.Context) {
+func (handler *MetricPushHandler) HandleMetricPush(ctx *gin.Context) {
 	var requestBody struct {
 		Record entities.SystemMetric `json:"record"`
 	}
@@ -27,7 +27,7 @@ func (handler *PushRecordHandler) HandlePush(ctx *gin.Context) {
 			"error":   err.Error(),
 		})
 		return
-	} else if err := handler.service.PushRecord(&requestBody.Record); err != nil {
+	} else if err := handler.service.PushMetric(&requestBody.Record); err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "Failed to push record",
 			"error":   err.Error(),
@@ -35,5 +35,5 @@ func (handler *PushRecordHandler) HandlePush(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Records pushed successfully"})
+	ctx.JSON(201, gin.H{"message": "Records pushed successfully"})
 }
