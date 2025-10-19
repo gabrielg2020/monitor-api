@@ -1,173 +1,174 @@
 # monitor-api
 
-A go api used to interact with the [monitor database](https://github.com/gabrielg2020/monitor-db).
+A REST API for collecting and serving system metrics from homelab clusters. Built with Go and Gin framework.
 
-## Installation
+## Features
 
-### 1. Install Go 1.25.x from [here](https://golang.org/dl/).
+- **Fast & Lightweight**: Built with Go for minimal resource usage
+- **SQLite Backend**: No complex database setup required
+- **RESTful API**: Clean, intuitive endpoints
+- **CORS Support**: Configurable cross-origin access
+- **Health Checks**: Built-in health monitoring endpoint
+- **Docker Ready**: Pre-built container images available
 
-    # ensure go is installed
-    go version
+## 📋 Table of Contents
 
-### 2. Clone the repository
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Development](#development)
+- [API Documentation](#api-documentation)
+- [Configuration](#configuration)
+- [Deployment](#deployment)
 
-    git clone https://github.com/gabrielg2020/pi-monitor-api
-    cd pi-monitor-api
+## Architecture
 
-### 3. Setup monitoring database
+## Prerequisites
 
-Follow the instructions [here](https://github.com/gabrielg2020/monitor-db)
+- Go 1.24+
+- Docker
+- SQLite3
 
-### 4. Install dependencies
+## Quick Start
 
-    go mod tidy
+### Using Docker
 
-### 5. Configure environment variables
+```bash
+# Pull the image
+docker pull ghcr.io/gabrielg2020/monitor-api:latest
 
-    cp .env.local .env
-    vim .env
+# Run the container
+docker run -d \
+  -p 8191:8191 \
+  -v $(pwd)/data:/app/data \
+  -e DB_PATH=/app/data/monitoring.db \
+  -e PORT=8191 \
+  -e ALLOWED_ORIGINS=http://localhost:5173 \
+  --name monitor-api \
+  ghcr.io/gabrielg2020/monitor-api:latest
+```
 
-## Usage
+### Using Docker Compose
 
-### With Docker
+Create `docker-compose.yml`:
+```yaml
+services:
+  api:
+    image: ghcr.io/gabrielg2020/monitor-api:latest
+    container_name: monitor-api
+    restart: unless-stopped
+    ports:
+      - "8191:8191"
+    volumes:
+      - ../data:/app/data
+    environment:
+      - DB_PATH=/app/data/monitoring.db
+      - PORT=8191
+      - GIN_MODE=release
+      - ALLOWED_ORIGINS=http://localhost:5173,https://monitoring.yourdomain.com
+```
 
-    docker build -t monitor-api .
-    docker run -d -p 8191:8191 --env-file .env --volume <PATH TO monitor-db>:/app/data --name monitor-api monitor-api
+Run:
+```bash
+docker-compose up -d
+```
 
-### With Docker Compose
-    
-    # change volume path
-    vim docker-compose.yml
-    docker compose up -d --build
+### Test the API
+```bash
+# Health check
+curl http://localhost:8191/health
 
-### Without Docker
+# Get hosts
+curl http://localhost:8191/api/v1/hosts
 
-    go run main.go
+# Get metrics
+curl "http://localhost:8191/api/v1/metrics?host_id=1&limit=10"
+```
 
-## API Endpoints
+## Development
 
-The API will be available at `http://localhost:8191` (or the host machine's IP address if running in Docker).
+### Clone and Setup
+```bash
+# Clone repository
+git clone https://github.com/gabrielg2020/monitor-api.git
+cd monitor-api
 
-### Available Endpoints
+# Install dependencies
+go mod download
 
-#### - `GET /health` - Check the health status of the API.
-  - Response:
-    ```json
-    {
-      "checks": {
-        "database": "healthy"
-      },
-      "status": "healthy",
-      "timestamp": "2025-10-16T23:52:51+01:00"
-     }
-    ```
-    
-#### - `POST /api/v1/hosts` - Push new host to the database.
-- Request Body (JSON):
-  ```json
-  {
-    "host": {
-      "id": <integer>,
-      "hostname": <string>,
-      "ip_address": <string>,
-      "role": <string>,
-    }
-  }
-  ```
+# Create .env file
+cp .env.example .env
+```
 
-#### - `GET /api/v1/hosts` - grab a queried host from databse.
-- Response:
-  ```json
-  {
-    "host": {
-      "id": 1,
-      "hostname": "test_hostname",
-      "ip_address": "192.168.0.1",
-      "role": "test_host"
-    }
-  }
-  ```
-- Query Parameters (one is required):
-    - `id` (optional): Filter host by ID.
-    - `hostname` (optional): Filter host by hostname.
-    - `ip_address` (optional): Filter host by IP address.
+### Environment Variables
 
-#### - `GET /api/v1/metrics` - grab all monitoring data from the database.
-  - Response:
-    ```json
-    {
-      "meta": {
-        "count": 1,
-        "limit": 100
-      },
-      "records": [
-        {
-          "id": 1,
-          "host_id": 1,
-          "timestamp": 1760663031,
-          "cpu_usage": 45.5,
-          "memory_usage_percent": 68.2,
-          "memory_total_bytes": 16777216000,
-          "memory_used_bytes": 11442954240,
-          "memory_available_bytes": 5334261760,
-          "disk_usage_percent": 72.3,
-          "disk_total_bytes": 512110190592,
-          "disk_used_bytes": 370191697920,
-          "disk_available_bytes": 141918492672
-        },
-        {...}
-      ]
-    }
-    ```
-  - Query Parameters:
-    - `host_id` (optional): Filter records by host ID.
-    - `start_time` (optional): Filter records with a timestamp greater than or equal to
-    - `end_time` (optional): Filter records with a timestamp less than or equal to
-    - `limit` (optional): Limit the number of records returned (default: 100).
-    - `order` (optional): Order of records by timestamp, either `asc` or `desc` (default: `desc`).
+Edit `.env` file:
+```bash
+PORT=8191
+DB_PATH=./data/monitoring.db
+GIN_MODE=debug
+ALLOWED_ORIGINS=http://localhost:5173
+```
 
-#### - `GET /api/v1/metrics/latest` - grab the latest monitoring data from the database.
-- Response:
-  ```json
-  {
-    "metric": {
-      "id": 1,
-      "host_id": 1,
-      "timestamp": 1760663031,
-      "cpu_usage": 45.5,
-      "memory_usage_percent": 68.2,
-      "memory_total_bytes": 16777216000,
-      "memory_used_bytes": 11442954240,
-      "memory_available_bytes": 5334261760,
-      "disk_usage_percent": 72.3,
-      "disk_total_bytes": 512110190592,
-      "disk_used_bytes": 370191697920,
-      "disk_available_bytes": 141918492672
-     }
-  }
-  ```
-- Query Parameters:
-    - `host_id` (optional): Filter records by host ID.
+### Run Locally
+```bash
+go run cmd/main.go
+```
 
-#### - `POST /api/v1/metrics` - Push new monitoring data to the database.
-  - Request Body (JSON):
-    ```json
-    {
-      "record": {
-        "host_id": <integer>,
-        "timestamp": <integer>,
-        "cpu_usage": <float>,
-        "memory_usage_percent": <float>,
-        "memory_total_bytes": <integer>,
-        "memory_used_bytes": <integer>,
-        "memory_available_bytes": <integer>,
-        "disk_usage_percent": <float>,
-        "disk_total_bytes": <integer>,
-        "disk_used_bytes": <integer>,
-        "disk_available_bytes": <integer>
-      }
-    }
-    ```
+### Build API Docs
+```bash
+swag init -g cmd/main.go -o docs --parseDependency --parseInternal --useStructName
+```
+
+## API Documentation
+
+The API documentation is generated using Swagger and can be accessed at `/swagger/index.html` when the server is running.
+
+## Configuration
+
+### Environment Variables
+
+| Variable          | Description                  | Default           | Required |
+|-------------------|------------------------------|-------------------|----------|
+| `PORT`            | Server port                  | `8191`            | Yes      |
+| `DB_PATH`         | SQLite database file path    | `./monitoring.db` | Yes      |
+| `GIN_MODE`        | Gin mode (debug/release)     | `debug`           | No       |
+| `ALLOWED_ORIGINS` | Comma-separated CORS origins | `*`               | No       |
+
+### CORS Configuration
+
+To allow specific origins:
+```bash
+ALLOWED_ORIGINS=http://localhost:5173,https://monitoring.yourdomain.com
+```
+
+### Database Configuration
+
+Follow the instructions in the [Monitor db](https://github.com/gabrielg2020/monitor-db)
+
+```bash
+git clone https://github.com/gabrielg2020/monitor-db
+```
+
+## Deployment
+
+### Building Docker Image
+```bash
+# Build the image
+docker build -t ghcr.io/yourusername/monitor-api:latest .
+
+# Push to registry
+docker push ghcr.io/yourusername/monitor-api:latest
+```
+### Production Deployment
+
+See the [Deployment Guide](https://github.com/gabrielg2020/monitor-frontend/docs/DEPLOYMENT.md) in [Monitor Frontend](https://github.com/gabrielg2020/monitor-frontend) for detailed instructions.
+
+## Related Projects
+
+- [Monitor Frontend](https://github.com/gabrielg2020/monitor-frontend) - React dashboard
+- [Monitor Agent](https://github.com/gabrielg2020/monitor-agent) - Python metric collector
+
 
 ## License
 
