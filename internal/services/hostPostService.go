@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/gabrielg2020/monitor-page/entities"
+	"github.com/gabrielg2020/monitor-api/internal/entities"
 )
 
 type HostPostService struct {

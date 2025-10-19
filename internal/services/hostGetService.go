@@ -3,12 +3,12 @@ package services
 import (
 	"database/sql"
 
-	"github.com/gabrielg2020/monitor-page/entities"
+	entities2 "github.com/gabrielg2020/monitor-api/internal/entities"
 )
 
 type HostGetService struct {
 	db           *sql.DB
-	requestQuery *entities.HostQueryParams
+	requestQuery *entities2.HostQueryParams
 }
 
 func NewHostGetService(con *sql.DB) *HostGetService {
@@ -17,11 +17,11 @@ func NewHostGetService(con *sql.DB) *HostGetService {
 	}
 }
 
-func (service *HostGetService) SetQueryParams(params *entities.HostQueryParams) {
+func (service *HostGetService) SetQueryParams(params *entities2.HostQueryParams) {
 	service.requestQuery = params
 }
 
-func (service *HostGetService) GetHost() ([]entities.Host, error) {
+func (service *HostGetService) GetHost() ([]entities2.Host, error) {
 	querySQL := `
 		SELECT id, hostname, ip_address, role
 		FROM hosts
@@ -56,9 +56,9 @@ func (service *HostGetService) GetHost() ([]entities.Host, error) {
 		}
 	}(rows)
 
-	var hosts []entities.Host
+	var hosts []entities2.Host
 	for rows.Next() {
-		var host entities.Host
+		var host entities2.Host
 		if err := rows.Scan(
 			&host.ID,
 			&host.Hostname,

@@ -6,12 +6,33 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gabrielg2020/monitor-page/handlers"
-	"github.com/gabrielg2020/monitor-page/services"
+	"github.com/gabrielg2020/monitor-api/internal/handlers"
+	"github.com/gabrielg2020/monitor-api/internal/services"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/gabrielg2020/monitor-api/docs"
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+// @title           Monitoring API
+// @version         1.0
+// @description     REST API for collecting and serving system metrics from homelab clusters
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Gabriel G
+// @contact.url    https://monitoring.gabrielg.tech
+// @contact.email  gabriel.mg04@outlook.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8191
+// @BasePath  /api/v1
+
+// @schemes   http https
 
 func main() {
 	engine := setupEngine()
@@ -67,6 +88,8 @@ func main() {
 			hosts.GET("", hostGetHandler.HandleHostGet)
 		}
 	}
+
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Start the engine
 	port := os.Getenv("PORT")
