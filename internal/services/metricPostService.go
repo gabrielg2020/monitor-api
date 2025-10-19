@@ -3,7 +3,7 @@ package services
 import (
 	"database/sql"
 
-	"github.com/gabrielg2020/monitor-page/entities"
+	"github.com/gabrielg2020/monitor-api/internal/entities"
 )
 
 type MetricPostService struct {

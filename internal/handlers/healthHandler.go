@@ -3,7 +3,8 @@ package handlers
 import (
 	"time"
 
-	"github.com/gabrielg2020/monitor-page/services"
+	"github.com/gabrielg2020/monitor-api/internal/models"
+	"github.com/gabrielg2020/monitor-api/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,15 @@ func NewHealthHandler(healthService *services.HealthService) *HealthHandler {
 	}
 }
 
+// HandleHealth godoc
+// @Summary      Health check
+// @Description  Check API and database health status
+// @Tags         system
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.HealthResponse
+// @Failure      503  {object}  models.ErrorResponse
+// @Router       /health [get]
 func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
 	checks := make(map[string]string)
 	status := "healthy"
@@ -30,9 +40,9 @@ func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
 		checks["database"] = "healthy"
 	}
 
-	ctx.JSON(statusCode, gin.H{
-		"status":    status,
-		"timestamp": time.Now().Format(time.RFC3339),
-		"checks":    checks,
+	ctx.JSON(statusCode, models.HealthResponse{
+		Status:    status,
+		Timestamp: time.Now().Format(time.RFC3339),
+		Checks:    checks,
 	})
 }

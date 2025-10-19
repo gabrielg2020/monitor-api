@@ -3,12 +3,12 @@ package services
 import (
 	"database/sql"
 
-	"github.com/gabrielg2020/monitor-page/entities"
+	entities2 "github.com/gabrielg2020/monitor-api/internal/entities"
 )
 
 type MetricLatestService struct {
 	db           *sql.DB
-	requestQuery *entities.MetricLatestQueryParams
+	requestQuery *entities2.MetricLatestQueryParams
 }
 
 func NewMetricLatestService(con *sql.DB) *MetricLatestService {
@@ -17,11 +17,11 @@ func NewMetricLatestService(con *sql.DB) *MetricLatestService {
 	}
 }
 
-func (service *MetricLatestService) SetQueryParams(params *entities.MetricLatestQueryParams) {
+func (service *MetricLatestService) SetQueryParams(params *entities2.MetricLatestQueryParams) {
 	service.requestQuery = params
 }
 
-func (service *MetricLatestService) GetLatestMetrics() (*entities.SystemMetric, error) {
+func (service *MetricLatestService) GetLatestMetrics() (*entities2.SystemMetric, error) {
 	querySQL := `
         SELECT id, host_id, timestamp, cpu_usage, memory_usage_percent,
                memory_total_bytes, memory_used_bytes, memory_available_bytes,
@@ -38,7 +38,7 @@ func (service *MetricLatestService) GetLatestMetrics() (*entities.SystemMetric, 
 
 	querySQL += " ORDER BY timestamp DESC LIMIT 1"
 
-	var metric entities.SystemMetric
+	var metric entities2.SystemMetric
 
 	err := service.db.QueryRow(querySQL, args...).Scan(
 		&metric.ID,

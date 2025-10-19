@@ -3,12 +3,12 @@ package services
 import (
 	"database/sql"
 
-	"github.com/gabrielg2020/monitor-page/entities"
+	entities2 "github.com/gabrielg2020/monitor-api/internal/entities"
 )
 
 type MetricGetService struct {
 	db           *sql.DB
-	requestQuery *entities.MetricQueryParams
+	requestQuery *entities2.MetricQueryParams
 }
 
 func NewMetricGetService(con *sql.DB) *MetricGetService {
@@ -17,11 +17,11 @@ func NewMetricGetService(con *sql.DB) *MetricGetService {
 	}
 }
 
-func (service *MetricGetService) SetQueryParams(params *entities.MetricQueryParams) {
+func (service *MetricGetService) SetQueryParams(params *entities2.MetricQueryParams) {
 	service.requestQuery = params
 }
 
-func (service *MetricGetService) GetMetrics() ([]entities.SystemMetric, error) {
+func (service *MetricGetService) GetMetrics() ([]entities2.SystemMetric, error) {
 	querySQL := `
 		SELECT id, host_id, timestamp, cpu_usage, memory_usage_percent,
 			   memory_total_bytes, memory_used_bytes, memory_available_bytes,
@@ -63,9 +63,9 @@ func (service *MetricGetService) GetMetrics() ([]entities.SystemMetric, error) {
 		}
 	}(rows)
 
-	var metrics []entities.SystemMetric
+	var metrics []entities2.SystemMetric
 	for rows.Next() {
-		var metric entities.SystemMetric
+		var metric entities2.SystemMetric
 		if err := rows.Scan(
 			&metric.ID,
 			&metric.HostID,
