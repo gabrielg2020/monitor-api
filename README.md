@@ -23,6 +23,8 @@ A REST API for collecting and serving system metrics from homelab clusters. Buil
 
 ## Architecture
 
+![Architecture Preview](architecture.png)
+
 ## Prerequisites
 
 - Go 1.24+
@@ -166,8 +168,9 @@ See the [Deployment Guide](https://github.com/gabrielg2020/monitor-frontend/docs
 
 ## Related Projects
 
-- [Monitor Frontend](https://github.com/gabrielg2020/monitor-frontend) - React dashboard
-- [Monitor Agent](https://github.com/gabrielg2020/monitor-agent) - Python metric collector
+- [Monitor Frontend](https://github.com/gabrielg2020/monitor-frontend) - Web dashboard
+- [Monitor Agent](https://github.com/gabrielg2020/monitor-agent) - Python agent for collecting metrics
+- [Monitor db](https://github.com/gabrielg2020/monitor-db) - Database schema
 
 
 ## License
