@@ -93,7 +93,7 @@ func setupEngine() *gin.Engine {
 			allowedOrigins[trimmed] = true
 		}
 	}
-	
+
 	engine.Use(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 		if allowedOrigins[origin] {
