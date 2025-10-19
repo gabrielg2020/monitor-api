@@ -35,4 +35,4 @@ jobs:
         run: go test -v ./...
 
       - name: Build
-        run: go build -o bin/monitor-api cmd/main.g
+        run: go build -o bin/monitor-api cmd/main.go

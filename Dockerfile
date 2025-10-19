@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=1 go build -ldflags="-w -s" -o app main.go
+RUN CGO_ENABLED=1 go build -ldflags="-w -s" -o app cmd/main.go
 
 # Final stage
 FROM alpine:latest
