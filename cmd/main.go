@@ -54,7 +54,8 @@ func main() {
 	}
 
 	// Initialize services and handlers
-	healthService := services.NewHealthService(db)
+	healthRepo := repository.NewHealthRepository(db)
+	healthService := services.NewHealthService(healthRepo)
 	healthHandler := handlers.NewHealthHandler(healthService)
 
 	metricRepo := repository.NewMetricRepository(db)
@@ -70,6 +71,7 @@ func main() {
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
+	engine.GET("/health/detailed", healthHandler.HandleDetailedHealth)
 
 	v1 := engine.Group("/api/v1")
 	{

@@ -12,10 +12,8 @@ type HealthHandler struct {
 	service *services.HealthService
 }
 
-func NewHealthHandler(healthService *services.HealthService) *HealthHandler {
-	return &HealthHandler{
-		service: healthService,
-	}
+func NewHealthHandler(service *services.HealthService) *HealthHandler {
+	return &HealthHandler{service: service}
 }
 
 // HandleHealth godoc
@@ -45,4 +43,37 @@ func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
 		Timestamp: time.Now().Format(time.RFC3339),
 		Checks:    checks,
 	})
+}
+
+// HandleDetailedHealth godoc
+// @Summary      Detailed health check
+// @Description  Get detailed health information including database stats and table counts
+// @Tags         system
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  object{status=string,timestamp=string,database=object,database_stats=object,table_counts=object}
+// @Failure      503  {object}  models.ErrorResponse
+// @Router       /health/detailed [get]
+func (handler *HealthHandler) HandleDetailedHealth(ctx *gin.Context) {
+	status := "healthy"
+	statusCode := 200
+
+	health, err := handler.service.GetDetailedHealth()
+	if err != nil {
+		status = "unhealthy"
+		statusCode = 503
+	}
+
+	// Add status and timestamp
+	response := gin.H{
+		"status":    status,
+		"timestamp": time.Now().Format(time.RFC3339),
+	}
+
+	// Merge detailed health info
+	for key, value := range health {
+		response[key] = value
+	}
+
+	ctx.JSON(statusCode, response)
 }

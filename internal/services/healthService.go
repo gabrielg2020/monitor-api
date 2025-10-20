@@ -1,26 +1,51 @@
 package services
 
 import (
-	"database/sql"
+	"github.com/gabrielg2020/monitor-api/internal/repository"
 )
 
 type HealthService struct {
-	db *sql.DB
+	repo *repository.HealthRepository
 }
 
-func NewHealthService(con *sql.DB) *HealthService {
-	return &HealthService{
-		db: con,
-	}
+func NewHealthService(repo *repository.HealthRepository) *HealthService {
+	return &HealthService{repo: repo}
 }
 
+// CheckHealth performs basic health checks
 func (service *HealthService) CheckHealth() error {
 	// Check database connectivity
-	if err := service.db.Ping(); err != nil {
-		return err
+	return service.repo.CheckDatabaseConnection()
+}
+
+// GetDetailedHealth returns detailed health information
+func (service *HealthService) GetDetailedHealth() (map[string]interface{}, error) {
+	health := make(map[string]interface{})
+
+	// Check database
+	if err := service.repo.CheckDatabaseConnection(); err != nil {
+		health["database"] = map[string]interface{}{
+			"status": "unhealthy",
+			"error":  err.Error(),
+		}
+		return health, err
 	}
 
-	// Additional health checks can be added here
+	health["database"] = map[string]interface{}{
+		"status": "healthy",
+	}
 
-	return nil
+	// Get database stats
+	stats, err := service.repo.GetDatabaseStats()
+	if err == nil {
+		health["database_stats"] = stats
+	}
+
+	// Get table counts
+	counts, err := service.repo.GetTableCounts()
+	if err == nil {
+		health["table_counts"] = counts
+	}
+
+	return health, nil
 }
