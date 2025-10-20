@@ -66,8 +66,7 @@ func main() {
 
 	hostRepo := repository.NewHostRepository(db)
 	hostService := services.NewHostService(hostRepo)
-	hostPostHandler := handlers.NewHostPostHandler(hostService)
-	hostGetHandler := handlers.NewHostGetHandler(hostService)
+	hostHandler := handlers.NewHostHandler(hostService)
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)
@@ -83,8 +82,10 @@ func main() {
 		}
 		hosts := v1.Group("/hosts")
 		{
-			hosts.POST("", hostPostHandler.HandleHostPost)
-			hosts.GET("", hostGetHandler.HandleHostGet)
+			hosts.POST("", hostHandler.Create)
+			hosts.GET("", hostHandler.Get)
+			hosts.PUT("", hostHandler.Update)
+			hosts.DELETE("", hostHandler.Delete)
 		}
 	}
 

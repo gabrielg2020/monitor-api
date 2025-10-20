@@ -14,28 +14,21 @@ func NewHostService(repo *repository.HostRepository) *HostService {
 }
 
 // GetHosts retrieves hosts based on query parameters
-func (s *HostService) GetHosts(params *entities.HostQueryParams) ([]entities.Host, error) {
-	return s.repo.FindByFilters(params)
+func (service *HostService) GetHosts(params *entities.HostQueryParams) ([]entities.Host, error) {
+	return service.repo.FindByFilters(params)
 }
 
-// CreateOrUpdateHost creates a new host or updates if it already exists
-func (s *HostService) CreateOrUpdateHost(host *entities.Host) (int64, error) {
-	// Business logic: Check if host already exists
-	existingHost, err := s.repo.FindByHostnameOrIP(host.Hostname, host.IPAddress)
-	if err != nil {
-		return 0, err
-	}
+// CreateHost creates a new host
+func (service *HostService) CreateHost(host *entities.Host) (int64, error) {
+	return service.repo.Create(host)
+}
 
-	// If host doesn't exist, create it
-	if existingHost == nil {
-		return s.repo.Create(host)
-	}
+// UpdateHost updates an existing host
+func (service *HostService) UpdateHost(id int64, host *entities.Host) error {
+	return service.repo.Update(id, host)
+}
 
-	// If host exists, update it
-	err = s.repo.Update(existingHost.ID, host)
-	if err != nil {
-		return 0, err
-	}
-
-	return existingHost.ID, nil
+// DeleteHost deletes a host by ID
+func (service *HostService) DeleteHost(id int64) error {
+	return service.repo.Delete(id)
 }

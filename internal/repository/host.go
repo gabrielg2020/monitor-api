@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/gabrielg2020/monitor-api/internal/entities"
@@ -37,106 +36,6 @@ func (repo *HostRepository) FindAll(limit int) ([]entities.Host, error) {
 	defer rows.Close()
 
 	return repo.scanHosts(rows)
-}
-
-// FindByID retrieves a host by ID
-func (repo *HostRepository) FindByID(id int64) (*entities.Host, error) {
-	querySQL := `
-		SELECT id, hostname, ip_address, role
-		FROM hosts
-		WHERE id = ?`
-
-	var host entities.Host
-	err := repo.db.QueryRow(querySQL, id).Scan(
-		&host.ID,
-		&host.Hostname,
-		&host.IPAddress,
-		&host.Role,
-	)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil // Not found
-		}
-		return nil, err
-	}
-
-	return &host, nil
-}
-
-// FindByHostname retrieves a host by hostname
-func (repo *HostRepository) FindByHostname(hostname string) (*entities.Host, error) {
-	querySQL := `
-		SELECT id, hostname, ip_address, role
-		FROM hosts
-		WHERE hostname = ?`
-
-	var host entities.Host
-	err := repo.db.QueryRow(querySQL, hostname).Scan(
-		&host.ID,
-		&host.Hostname,
-		&host.IPAddress,
-		&host.Role,
-	)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil // Not found
-		}
-		return nil, err
-	}
-
-	return &host, nil
-}
-
-// FindByIPAddress retrieves a host by IP address
-func (repo *HostRepository) FindByIPAddress(ipAddress string) (*entities.Host, error) {
-	querySQL := `
-		SELECT id, hostname, ip_address, role
-		FROM hosts
-		WHERE ip_address = ?`
-
-	var host entities.Host
-	err := repo.db.QueryRow(querySQL, ipAddress).Scan(
-		&host.ID,
-		&host.Hostname,
-		&host.IPAddress,
-		&host.Role,
-	)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil // Not found
-		}
-		return nil, err
-	}
-
-	return &host, nil
-}
-
-// FindByHostnameOrIP finds a host by hostname or IP address
-func (repo *HostRepository) FindByHostnameOrIP(hostname, ipAddress string) (*entities.Host, error) {
-	querySQL := `
-		SELECT id, hostname, ip_address, role
-		FROM hosts
-		WHERE hostname = ? OR ip_address = ?`
-
-	var host entities.Host
-	err := repo.db.QueryRow(querySQL, hostname, ipAddress).Scan(
-		&host.ID,
-		&host.Hostname,
-		&host.IPAddress,
-		&host.Role,
-	)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil // Not found
-		}
-		return nil, err
-	}
-
-	return &host, nil
 }
 
 // FindByFilters retrieves hosts based on query parameters
@@ -212,6 +111,26 @@ func (repo *HostRepository) UpdateLastSeen(id int64) error {
 	updateSQL := `UPDATE hosts SET last_seen = ? WHERE id = ?`
 	_, err := repo.db.Exec(updateSQL, timestamp, id)
 	return err
+}
+
+// Delete removes a host from the database
+func (repo *HostRepository) Delete(id int64) error {
+	deleteSQL := `DELETE FROM hosts WHERE id = ?`
+	result, err := repo.db.Exec(deleteSQL, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }
 
 // scanHosts is a helper to scan multiple rows into Host slice
