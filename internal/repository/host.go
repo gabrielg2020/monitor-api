@@ -25,7 +25,7 @@ func (repo *HostRepository) FindAll(limit int) ([]entities.Host, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer rows.Close()
+		defer closeRows(rows)
 		return repo.scanHosts(rows)
 	}
 
@@ -33,8 +33,7 @@ func (repo *HostRepository) FindAll(limit int) ([]entities.Host, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
+	defer closeRows(rows)
 	return repo.scanHosts(rows)
 }
 
@@ -66,7 +65,7 @@ func (repo *HostRepository) FindByFilters(params *entities.HostQueryParams) ([]e
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer closeRows(rows)
 
 	return repo.scanHosts(rows)
 }

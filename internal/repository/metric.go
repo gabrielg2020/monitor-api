@@ -50,7 +50,7 @@ func (repo *MetricRepository) FindByFilters(params *entities.MetricQueryParams) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer closeRows(rows)
 
 	return repo.scanMetrics(rows)
 }
