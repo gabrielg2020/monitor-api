@@ -91,12 +91,7 @@ func (handler *HostHandler) Get(ctx *gin.Context) {
 	// Convert entities.Host to models.Host
 	modelHosts := make([]models.Host, len(hosts))
 	for i, host := range hosts {
-		modelHosts[i] = models.Host{
-			ID:        host.ID,
-			Hostname:  host.Hostname,
-			IPAddress: host.IPAddress,
-			Role:      host.Role,
-		}
+		modelHosts[i] = toModelHost(host)
 	}
 
 	ctx.JSON(200, models.HostListResponse{
