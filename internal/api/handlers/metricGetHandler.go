@@ -11,10 +11,10 @@ import (
 )
 
 type MetricGetHandler struct {
-	service *services.MetricGetService
+	service *services.MetricService
 }
 
-func NewMetricGetHandler(getService *services.MetricGetService) *MetricGetHandler {
+func NewMetricGetHandler(getService *services.MetricService) *MetricGetHandler {
 	return &MetricGetHandler{
 		service: getService,
 	}
@@ -46,7 +46,7 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 		return
 	}
 
-	// Set Defaults
+	// Set defaults and validate
 	if queryParams.Limit == 0 {
 		queryParams.Limit = 100
 	}
@@ -56,16 +56,16 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 	if queryParams.Order == "" {
 		queryParams.Order = "DESC"
 	} else {
-		// Check if order is valid
 		queryParams.Order = strings.ToUpper(queryParams.Order)
 		if queryParams.Order != "ASC" && queryParams.Order != "DESC" {
 			ctx.JSON(400, models.ErrorResponse{
-				Error:   "Invalid order parameter, must be 'ASC' or 'DESC'",
-				Details: "invalid order parameter",
+				Error:   "Invalid order parameter",
+				Details: "Must be 'ASC' or 'DESC'",
 			})
 			return
 		}
 	}
+
 	now := time.Now().Unix()
 	if queryParams.EndTime == nil {
 		queryParams.EndTime = &now
@@ -75,9 +75,7 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 		queryParams.StartTime = &thirtyDaysAgo
 	}
 
-	handler.service.SetQueryParams(&queryParams)
-
-	records, err := handler.service.GetMetrics()
+	records, err := handler.service.GetMetrics(&queryParams)
 	if err != nil {
 		ctx.JSON(500, models.ErrorResponse{
 			Error:   "Failed to retrieve metrics",

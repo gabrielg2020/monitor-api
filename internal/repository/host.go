@@ -163,7 +163,7 @@ func (repo *HostRepository) FindByFilters(params *entities.HostQueryParams) ([]e
 		args = append(args, params.IPAddress)
 	}
 
-	rows, err := r.db.Query(querySQL, args...)
+	rows, err := repo.db.Query(querySQL, args...)
 	if err != nil {
 		return nil, err
 	}

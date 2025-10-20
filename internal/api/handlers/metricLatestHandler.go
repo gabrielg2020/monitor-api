@@ -8,10 +8,10 @@ import (
 )
 
 type MetricLatestHandler struct {
-	service *services.MetricLatestService
+	service *services.MetricService
 }
 
-func NewMetricLatestHandler(latestService *services.MetricLatestService) *MetricLatestHandler {
+func NewMetricLatestHandler(latestService *services.MetricService) *MetricLatestHandler {
 	return &MetricLatestHandler{
 		service: latestService,
 	}
@@ -38,13 +38,19 @@ func (handler *MetricLatestHandler) HandleMetricLatest(ctx *gin.Context) {
 		return
 	}
 
-	handler.service.SetQueryParams(&queryParams)
-
-	metric, err := handler.service.GetLatestMetrics()
+	metric, err := handler.service.GetLatestMetric(queryParams.HostID)
 	if err != nil {
 		ctx.JSON(500, models.ErrorResponse{
 			Error:   "Failed to retrieve latest metric",
 			Details: err.Error(),
+		})
+		return
+	}
+
+	if metric == nil {
+		ctx.JSON(404, models.ErrorResponse{
+			Error:   "Metric not found",
+			Details: "No latest metric found for the specified host",
 		})
 		return
 	}

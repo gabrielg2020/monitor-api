@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	handlers2 "github.com/gabrielg2020/monitor-api/internal/api/handlers"
+	"github.com/gabrielg2020/monitor-api/internal/api/handlers"
 	"github.com/gabrielg2020/monitor-api/internal/repository"
 	"github.com/gabrielg2020/monitor-api/internal/services"
 	"github.com/gin-gonic/gin"
@@ -55,21 +55,18 @@ func main() {
 
 	// Initialize services and handlers
 	healthService := services.NewHealthService(db)
-	healthHandler := handlers2.NewHealthHandler(healthService)
+	healthHandler := handlers.NewHealthHandler(healthService)
 
-	metricPostService := services.NewMetricPostService(db)
-	metricPostHandler := handlers2.NewMetricPostHandler(metricPostService)
-
-	metricGetService := services.NewMetricGetService(db)
-	metricGetHandler := handlers2.NewMetricGetHandler(metricGetService)
-
-	metricLatestService := services.NewMetricLatestService(db)
-	metricLatestHandler := handlers2.NewMetricLatestHandler(metricLatestService)
+	metricRepo := repository.NewMetricRepository(db)
+	metricPostService := services.NewMetricService(metricRepo)
+	metricPostHandler := handlers.NewMetricPostHandler(metricPostService)
+	metricGetHandler := handlers.NewMetricGetHandler(metricPostService)
+	metricLatestHandler := handlers.NewMetricLatestHandler(metricPostService)
 
 	hostRepo := repository.NewHostRepository(db)
 	hostService := services.NewHostService(hostRepo)
-	hostPostHandler := handlers2.NewHostPostHandler(hostService)
-	hostGetHandler := handlers2.NewHostGetHandler(hostService)
+	hostPostHandler := handlers.NewHostPostHandler(hostService)
+	hostGetHandler := handlers.NewHostGetHandler(hostService)
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)

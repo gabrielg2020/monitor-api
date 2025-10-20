@@ -8,10 +8,10 @@ import (
 )
 
 type MetricPostHandler struct {
-	service *services.MetricPostService
+	service *services.MetricService
 }
 
-func NewMetricPostHandler(postService *services.MetricPostService) *MetricPostHandler {
+func NewMetricPostHandler(postService *services.MetricService) *MetricPostHandler {
 	return &MetricPostHandler{
 		service: postService,
 	}
@@ -41,7 +41,7 @@ func (handler *MetricPostHandler) HandleMetricPost(ctx *gin.Context) {
 		return
 	}
 
-	id, err := handler.service.PostMetric(&requestBody.Record)
+	id, err := handler.service.CreateMetric(&requestBody.Record)
 	if err != nil {
 		ctx.JSON(500, models.ErrorResponse{
 			Error:   "Failed to post metric record",
