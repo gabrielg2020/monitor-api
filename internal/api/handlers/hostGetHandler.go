@@ -8,12 +8,12 @@ import (
 )
 
 type HostGetHandler struct {
-	service *services.HostGetService
+	service *services.HostService
 }
 
-func NewHostGetHandler(getService *services.HostGetService) *HostGetHandler {
+func NewHostGetHandler(service *services.HostService) *HostGetHandler {
 	return &HostGetHandler{
-		service: getService,
+		service: service,
 	}
 }
 
@@ -38,9 +38,7 @@ func (handler *HostGetHandler) HandleHostGet(ctx *gin.Context) {
 		return
 	}
 
-	handler.service.SetQueryParams(&queryParams)
-
-	hosts, err := handler.service.GetHost()
+	hosts, err := handler.service.GetHosts(&queryParams)
 	if err != nil {
 		ctx.JSON(500, models.ErrorResponse{
 			Error:   "Failed to retrieve hosts",
@@ -49,6 +47,7 @@ func (handler *HostGetHandler) HandleHostGet(ctx *gin.Context) {
 		return
 	}
 
+	// Convert entities.Host to models.Host
 	modelHosts := make([]models.Host, len(hosts))
 	for i, host := range hosts {
 		modelHosts[i] = models.Host{

@@ -6,7 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gabrielg2020/monitor-api/internal/handlers"
+	handlers2 "github.com/gabrielg2020/monitor-api/internal/api/handlers"
+	"github.com/gabrielg2020/monitor-api/internal/repository"
 	"github.com/gabrielg2020/monitor-api/internal/services"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -54,22 +55,21 @@ func main() {
 
 	// Initialize services and handlers
 	healthService := services.NewHealthService(db)
-	healthHandler := handlers.NewHealthHandler(healthService)
+	healthHandler := handlers2.NewHealthHandler(healthService)
 
 	metricPostService := services.NewMetricPostService(db)
-	metricPostHandler := handlers.NewMetricPostHandler(metricPostService)
+	metricPostHandler := handlers2.NewMetricPostHandler(metricPostService)
 
 	metricGetService := services.NewMetricGetService(db)
-	metricGetHandler := handlers.NewMetricGetHandler(metricGetService)
+	metricGetHandler := handlers2.NewMetricGetHandler(metricGetService)
 
 	metricLatestService := services.NewMetricLatestService(db)
-	metricLatestHandler := handlers.NewMetricLatestHandler(metricLatestService)
+	metricLatestHandler := handlers2.NewMetricLatestHandler(metricLatestService)
 
-	hostPostService := services.NewHostPostService(db)
-	hostPostHandler := handlers.NewHostPostHandler(hostPostService)
-
-	hostGetService := services.NewHostGetService(db)
-	hostGetHandler := handlers.NewHostGetHandler(hostGetService)
+	hostRepo := repository.NewHostRepository(db)
+	hostService := services.NewHostService(hostRepo)
+	hostPostHandler := handlers2.NewHostPostHandler(hostService)
+	hostGetHandler := handlers2.NewHostGetHandler(hostService)
 
 	// Set up endpoints
 	engine.GET("/health", healthHandler.HandleHealth)

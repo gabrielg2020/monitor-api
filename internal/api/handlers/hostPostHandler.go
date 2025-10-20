@@ -8,10 +8,10 @@ import (
 )
 
 type HostPostHandler struct {
-	service *services.HostPostService
+	service *services.HostService
 }
 
-func NewHostPostHandler(postService *services.HostPostService) *HostPostHandler {
+func NewHostPostHandler(postService *services.HostService) *HostPostHandler {
 	return &HostPostHandler{
 		service: postService,
 	}
@@ -41,17 +41,17 @@ func (handler *HostPostHandler) HandleHostPost(ctx *gin.Context) {
 		return
 	}
 
-	id, err := handler.service.PostHost(&requestBody.Host)
+	id, err := handler.service.CreateOrUpdateHost(&requestBody.Host)
 	if err != nil {
 		ctx.JSON(500, models.ErrorResponse{
-			Error:   "Failed to post host",
+			Error:   "Failed to register host",
 			Details: err.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(201, gin.H{
-		"message": "Host posted successfully",
+		"message": "Host registered successfully",
 		"id":      id,
 	})
 }
