@@ -67,8 +67,8 @@ func main() {
 	hostHandler := handlers.NewHostHandler(hostService)
 
 	// Set up endpoints
-	engine.GET("/health", healthHandler.HandleHealth)
-	engine.GET("/health/detailed", healthHandler.HandleDetailedHealth)
+	engine.GET("/health", healthHandler.GetHealth)
+	engine.GET("/health/detailed", healthHandler.GetDetailedHealth)
 
 	v1 := engine.Group("/api/v1")
 	{

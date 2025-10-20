@@ -16,7 +16,7 @@ func NewHealthHandler(service *services.HealthService) *HealthHandler {
 	return &HealthHandler{service: service}
 }
 
-// HandleHealth godoc
+// GetHealth godoc
 // @Summary      Health check
 // @Description  Check API and database health status
 // @Tags         system
@@ -25,7 +25,7 @@ func NewHealthHandler(service *services.HealthService) *HealthHandler {
 // @Success      200  {object}  models.HealthResponse
 // @Failure      503  {object}  models.ErrorResponse
 // @Router       /health [get]
-func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
+func (handler *HealthHandler) GetHealth(ctx *gin.Context) {
 	checks := make(map[string]string)
 	status := "healthy"
 	statusCode := 200
@@ -45,7 +45,7 @@ func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
 	})
 }
 
-// HandleDetailedHealth godoc
+// GetDetailedHealth godoc
 // @Summary      Detailed health check
 // @Description  Get detailed health information including database stats and table counts
 // @Tags         system
@@ -54,7 +54,7 @@ func (handler *HealthHandler) HandleHealth(ctx *gin.Context) {
 // @Success      200  {object}  object{status=string,timestamp=string,database=object,database_stats=object,table_counts=object}
 // @Failure      503  {object}  models.ErrorResponse
 // @Router       /health/detailed [get]
-func (handler *HealthHandler) HandleDetailedHealth(ctx *gin.Context) {
+func (handler *HealthHandler) GetDetailedHealth(ctx *gin.Context) {
 	status := "healthy"
 	statusCode := 200
 
