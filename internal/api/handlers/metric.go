@@ -10,24 +10,60 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MetricGetHandler struct {
+type MetricHandler struct {
 	service *services.MetricService
 }
 
-func NewMetricGetHandler(getService *services.MetricService) *MetricGetHandler {
-	return &MetricGetHandler{
-		service: getService,
-	}
+func NewMetricHandler(service *services.MetricService) *MetricHandler {
+	return &MetricHandler{service: service}
 }
 
-// HandleMetricGet godoc
+// Create godoc
+// @Summary      Submit system metrics
+// @Description  Submit new system metrics from a monitoring agent
+// @Tags         metrics
+// @Accept       json
+// @Produce      json
+// @Param        request  body  models.CreateMetricRequest  true  "Metric data"
+// @Success      201  {object}  object{message=string,id=int64}
+// @Failure      400  {object}  models.ErrorResponse
+// @Failure      500  {object}  models.ErrorResponse
+// @Router       /metrics [post]
+func (handler *MetricHandler) Create(ctx *gin.Context) {
+	var requestBody struct {
+		Record entities.SystemMetric `json:"record"`
+	}
+
+	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
+		ctx.JSON(400, models.ErrorResponse{
+			Error:   "Invalid request body",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	id, err := handler.service.CreateMetric(&requestBody.Record)
+	if err != nil {
+		ctx.JSON(500, models.ErrorResponse{
+			Error:   "Failed to create metric record",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(201, gin.H{
+		"message": "Metric create successfully",
+		"id":      id,
+	})
+}
+
+// Get godoc
 // @Summary      Get system metrics
 // @Description  Retrieve system metrics with optional filtering and time range
 // @Tags         metrics
 // @Accept       json
 // @Produce      json
 // @Param        host_id     query  int     false  "Filter by host ID"
-// @Param        hostname    query  string  false  "Filter by hostname"
 // @Param        limit       query  int     false  "Limit results (max 1000)"  default(100)
 // @Param        order       query  string  false  "Sort order (ASC or DESC)"  default(DESC)
 // @Param        start_time  query  int     false  "Start timestamp (Unix)"
@@ -36,7 +72,7 @@ func NewMetricGetHandler(getService *services.MetricService) *MetricGetHandler {
 // @Failure      400  {object}  models.ErrorResponse
 // @Failure      500  {object}  models.ErrorResponse
 // @Router       /metrics [get]
-func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
+func (handler *MetricHandler) Get(ctx *gin.Context) {
 	var queryParams entities.MetricQueryParams
 	if err := ctx.ShouldBindQuery(&queryParams); err != nil {
 		ctx.JSON(400, models.ErrorResponse{
@@ -71,7 +107,7 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 		queryParams.EndTime = &now
 	}
 	if queryParams.StartTime == nil {
-		thirtyDaysAgo := *queryParams.EndTime - (86400 * 30) // Default to last 30 days
+		thirtyDaysAgo := *queryParams.EndTime - (86400 * 30)
 		queryParams.StartTime = &thirtyDaysAgo
 	}
 
@@ -109,5 +145,51 @@ func (handler *MetricGetHandler) HandleMetricGet(ctx *gin.Context) {
 			Count: len(modelMetrics),
 			Limit: queryParams.Limit,
 		},
+	})
+}
+
+// GetLatest godoc
+// @Summary      Get latest metrics
+// @Description  Retrieve the most recent metrics for each host or a specific host
+// @Tags         metrics
+// @Accept       json
+// @Produce      json
+// @Param        host_id  query  int  false  "Filter by host ID"
+// @Success      200  {object}  object{metric=models.SystemMetric}
+// @Failure      400  {object}  models.ErrorResponse
+// @Failure      404  {object}  models.ErrorResponse
+// @Failure      500  {object}  models.ErrorResponse
+// @Router       /metrics/latest [get]
+func (handler *MetricHandler) GetLatest(ctx *gin.Context) {
+	// If host_id is provided, get latest metric for that host
+	// Otherwise, get latest metrics for all hosts
+	var queryParams entities.MetricLatestQueryParams
+	if err := ctx.ShouldBindQuery(&queryParams); err != nil {
+		ctx.JSON(400, models.ErrorResponse{
+			Error:   "Invalid query parameters",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	metric, err := handler.service.GetLatestMetric(queryParams.HostID)
+	if err != nil {
+		ctx.JSON(500, models.ErrorResponse{
+			Error:   "Failed to retrieve latest metric",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	if metric == nil {
+		ctx.JSON(404, models.ErrorResponse{
+			Error:   "Metric not found",
+			Details: "No latest metric found for the specified host",
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"metric": metric,
 	})
 }

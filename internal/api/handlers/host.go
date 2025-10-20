@@ -17,6 +17,45 @@ func NewHostHandler(service *services.HostService) *HostHandler {
 	return &HostHandler{service: service}
 }
 
+// Create godoc
+// @Summary      Register a new host
+// @Description  Register a new Raspberry Pi host in the monitoring system or update if already exists
+// @Tags         hosts
+// @Accept       json
+// @Produce      json
+// @Param        request  body  models.CreateHostRequest  true  "Host information"
+// @Success      201  {object}  object{message=string,id=int64}
+// @Failure      400  {object}  models.ErrorResponse
+// @Failure      500  {object}  models.ErrorResponse
+// @Router       /hosts [post]
+func (handler *HostHandler) Create(ctx *gin.Context) {
+	var requestBody struct {
+		Host entities.Host `json:"host"`
+	}
+
+	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
+		ctx.JSON(400, models.ErrorResponse{
+			Error:   "Invalid request body",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	id, err := handler.service.CreateHost(&requestBody.Host)
+	if err != nil {
+		ctx.JSON(500, models.ErrorResponse{
+			Error:   "Failed to create host",
+			Details: err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(201, gin.H{
+		"message": "Host created successfully",
+		"id":      id,
+	})
+}
+
 // Get List godoc
 // @Summary      List all hosts
 // @Description  Get a list of all registered hosts in the monitoring system
@@ -65,45 +104,6 @@ func (handler *HostHandler) Get(ctx *gin.Context) {
 		Meta: models.Meta{
 			Count: len(modelHosts),
 		},
-	})
-}
-
-// Create godoc
-// @Summary      Register a new host
-// @Description  Register a new Raspberry Pi host in the monitoring system or update if already exists
-// @Tags         hosts
-// @Accept       json
-// @Produce      json
-// @Param        request  body  models.CreateHostRequest  true  "Host information"
-// @Success      201  {object}  object{message=string,id=int64}
-// @Failure      400  {object}  models.ErrorResponse
-// @Failure      500  {object}  models.ErrorResponse
-// @Router       /hosts [post]
-func (handler *HostHandler) Create(ctx *gin.Context) {
-	var requestBody struct {
-		Host entities.Host `json:"host"`
-	}
-
-	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
-		ctx.JSON(400, models.ErrorResponse{
-			Error:   "Invalid request body",
-			Details: err.Error(),
-		})
-		return
-	}
-
-	id, err := handler.service.CreateHost(&requestBody.Host)
-	if err != nil {
-		ctx.JSON(500, models.ErrorResponse{
-			Error:   "Failed to create host",
-			Details: err.Error(),
-		})
-		return
-	}
-
-	ctx.JSON(201, gin.H{
-		"message": "Host created successfully",
-		"id":      id,
 	})
 }
 

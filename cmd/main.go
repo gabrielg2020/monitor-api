@@ -60,9 +60,7 @@ func main() {
 
 	metricRepo := repository.NewMetricRepository(db)
 	metricPostService := services.NewMetricService(metricRepo)
-	metricPostHandler := handlers.NewMetricPostHandler(metricPostService)
-	metricGetHandler := handlers.NewMetricGetHandler(metricPostService)
-	metricLatestHandler := handlers.NewMetricLatestHandler(metricPostService)
+	metricHandler := handlers.NewMetricHandler(metricPostService)
 
 	hostRepo := repository.NewHostRepository(db)
 	hostService := services.NewHostService(hostRepo)
@@ -76,9 +74,9 @@ func main() {
 	{
 		metrics := v1.Group("/metrics")
 		{
-			metrics.POST("", metricPostHandler.HandleMetricPost)
-			metrics.GET("", metricGetHandler.HandleMetricGet)
-			metrics.GET("/latest", metricLatestHandler.HandleMetricLatest)
+			metrics.POST("", metricHandler.Create)
+			metrics.GET("", metricHandler.Get)
+			metrics.GET("/latest", metricHandler.GetLatest)
 		}
 		hosts := v1.Group("/hosts")
 		{

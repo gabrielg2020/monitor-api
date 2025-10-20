@@ -98,29 +98,6 @@ func (repo *MetricRepository) FindLatest(hostID *int64) (*entities.SystemMetric,
 	return &metric, nil
 }
 
-// FindLatestByHost retrieves the most recent metric for each host
-func (repo *MetricRepository) FindLatestByHost() ([]entities.SystemMetric, error) {
-	querySQL := `
-		SELECT m.id, m.host_id, m.timestamp, m.cpu_usage, m.memory_usage_percent,
-			   m.memory_total_bytes, m.memory_used_bytes, m.memory_available_bytes,
-			   m.disk_usage_percent, m.disk_total_bytes, m.disk_used_bytes, m.disk_available_bytes
-		FROM system_metrics m
-		INNER JOIN (
-			SELECT host_id, MAX(timestamp) as max_timestamp
-			FROM system_metrics
-			GROUP BY host_id
-		) latest ON m.host_id = latest.host_id AND m.timestamp = latest.max_timestamp
-		ORDER BY m.host_id`
-
-	rows, err := repo.db.Query(querySQL)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	return repo.scanMetrics(rows)
-}
-
 // Create inserts a new metric record
 func (repo *MetricRepository) Create(metric *entities.SystemMetric) (int64, error) {
 	insertSQL := `
@@ -149,16 +126,6 @@ func (repo *MetricRepository) Create(metric *entities.SystemMetric) (int64, erro
 	}
 
 	return result.LastInsertId()
-}
-
-// DeleteOlderThan deletes metrics older than the given timestamp
-func (repo *MetricRepository) DeleteOlderThan(timestamp int64) (int64, error) {
-	deleteSQL := `DELETE FROM system_metrics WHERE timestamp < ?`
-	result, err := repo.db.Exec(deleteSQL, timestamp)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
 }
 
 // scanMetrics is a helper to scan multiple rows into SystemMetric slice
