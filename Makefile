@@ -8,6 +8,7 @@ BINARY_NAME=monitor-api
 
 # Test parameters
 TEST_TIMEOUT=30s
+COVERAGE_THRESHOLD=80.0
 COVERAGE_FILE=coverage.out
 COVERAGE_HTML=coverage.html
 
@@ -28,6 +29,7 @@ help: ## Show this help message
 deps: ## Download dependencies
 	@echo "$(YELLOW)Downloading dependencies...$(NC)"
 	$(GOMOD) download
+	$(GOMOD) tidy
 	@echo "$(GREEN)Dependencies downloaded$(NC)"
 
 .PHONY: test-deps
@@ -64,10 +66,13 @@ test-repository: ## Run repository layer tests
 	$(GOTEST) -v -timeout $(TEST_TIMEOUT) ./internal/repository/...
 
 .PHONY: test-coverage
-test-coverage: ## Run tests with coverage
-	@echo "$(YELLOW)Running tests with coverage...$(NC)"
-	$(GOTEST) -v -race -coverprofile=$(COVERAGE_FILE) -covermode=atomic -timeout $(TEST_TIMEOUT) ./...
-	@echo "$(GREEN)Coverage report generated: $(COVERAGE_FILE)$(NC)"
+test-coverage: ## Run tests with coverage and enforce coverage threshold
+	@echo "$(YELLOW)Running tests with coverage check...$(NC)"
+	$(GOTEST) -coverprofile=$(COVERAGE_FILE) ./...
+	@COVERAGE=$$(go tool cover -func=$(COVERAGE_FILE) | grep total: | awk '{print substr($$3, 1, length($$3)-1)}'); \
+	echo "Total coverage: $$COVERAGE% (threshold: $(COVERAGE_THRESHOLD)%)"; \
+	awk -v cov=$$COVERAGE -v thr=$(COVERAGE_THRESHOLD) 'BEGIN {if (cov+0 < thr+0) {print "$(RED)Coverage below threshold!$(NC)"; exit 1}}'
+	@echo "$(GREEN)Coverage check passed$(NC)"
 
 .PHONY: test-coverage-html
 test-coverage-html: test-coverage ## Generate HTML coverage report
