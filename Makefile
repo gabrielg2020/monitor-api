@@ -38,12 +38,6 @@ test-deps: ## Install test dependencies
 	$(GOGET) -u github.com/DATA-DOG/go-sqlmock
 	@echo "$(GREEN)Dependencies downloaded$(NC)"
 
-.PHONY: docs-deps
-docs-deps: ## Install documentation dependencies
-	@echo "$(YELLOW)Installing documentation dependencies...$(NC)"
-	$(GOINSTALL) github.com/swaggo/swag/cmd/swag@latest
-	@echo "$(GREEN)Dependencies downloaded$(NC)"
-
 .PHONY: test
 test: ## Run all tests
 	@echo "$(YELLOW)Running all tests...$(NC)"
@@ -130,12 +124,12 @@ fmt: ## Format code
 .PHONY: build
 build: ## Build the application
 	@echo "$(YELLOW)Building application...$(NC)"
-	$(GOCMD) build -o $(BINARY_NAME) ./cmd/monitor-api
+	$(GOCMD) build -o $(BINARY_NAME) ./cmd
 	@echo "$(GREEN)Build complete: $(BINARY_NAME)$(NC)"
 
 .PHONY: docs
 docs: ## Generate API documentation
 	@command -v swag >/dev/null 2>&1 || { echo "$(RED)swag is required but not installed.$(NC)" >&2; exit 1; }
 	@echo "$(YELLOW)Generating API documentation...$(NC)"
-	swag init -g ./cmd/monitor-api/main.go -o ./docs
+	swag init -g ./cmd/main.go -o ./docs
 	@echo "$(GREEN)API documentation generated in ./docs$(NC)"

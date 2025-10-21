@@ -5,3 +5,4 @@ docs/
 coverage.out
 coverage.html
 test-report.json
+monitor-api

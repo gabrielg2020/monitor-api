@@ -19,11 +19,10 @@ jobs:
       - name: Install dependencies
         run: make deps
 
-      - name: Install documentation dependencies
-        run: make docs-deps
-
       - name: Generate Swagger docs
-        run: make docs
+        run: |
+          run: go install github.com/swaggo/swag/cmd/swag@latest
+          swag init -g cmd/main.go -o docs --parseDependency --parseInternal --useStructName
 
       - name: Run Lint
         uses: golangci/golangci-lint-action@v8
