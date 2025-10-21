@@ -27,6 +27,8 @@ help: ## Show this help message
 deps: ## Download dependencies
 	@echo "$(YELLOW)Downloading dependencies...$(NC)"
 	$(GOMOD) download
+	@echo "$(GREEN)Dependencies downloaded$(NC)"
+	@echo "$(YELLOW)Installing golangci-lint and swagger$(NC)"
 
 .PHONY: test-deps
 test-deps: ## Install test dependencies
@@ -34,6 +36,15 @@ test-deps: ## Install test dependencies
 	$(GOGET) -u github.com/stretchr/testify
 	$(GOGET) -u github.com/vektra/mockery/v2/...
 	$(GOGET) -u github.com/DATA-DOG/go-sqlmock
+
+.PHONY: tool-deps
+tool-deps: ## Install tool dependencies
+	@echo "$(YELLOW)Installing tool dependencies...$(NC)"
+	$(GOGET) -u github.com/golangci/golangci-lint/cmd
+	$(GOGET) -u github.com/swaggo/swag/cmd/swag
+	$(GOGET) -u github.com/swaggo/gin-swagger
+	$(GOGET) -u github.com/swaggo/file
+	@echo "$(GREEN)Linter tool installed$(NC)"
 
 .PHONY: test
 test: ## Run all tests
