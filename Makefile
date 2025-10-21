@@ -29,7 +29,6 @@ deps: ## Download dependencies
 	@echo "$(YELLOW)Downloading dependencies...$(NC)"
 	$(GOMOD) download
 	@echo "$(GREEN)Dependencies downloaded$(NC)"
-	@echo "$(YELLOW)Installing golangci-lint and swagger$(NC)"
 
 .PHONY: test-deps
 test-deps: ## Install test dependencies
@@ -37,15 +36,13 @@ test-deps: ## Install test dependencies
 	$(GOGET) -u github.com/stretchr/testify
 	$(GOGET) -u github.com/vektra/mockery/v2/...
 	$(GOGET) -u github.com/DATA-DOG/go-sqlmock
+	@echo "$(GREEN)Dependencies downloaded$(NC)"
 
-.PHONY: tool-deps
-tool-deps: ## Install tool dependencies
-	@echo "$(YELLOW)Installing tool dependencies...$(NC)"
-	sudo apt-get install -y golangci-lint
-	$(GOINSTALL) -u github.com/swaggo/swag/cmd/swag
-	$(GOINSTALL) -u github.com/swaggo/gin-swagger
-	$(GOINSTALL) -u github.com/swaggo/file
-	@echo "$(GREEN)Tools installed$(NC)"
+.PHONY: docs-deps
+tool-deps: ## Install documentation dependencies
+	@echo "$(YELLOW)Installing documentation dependencies...$(NC)"
+	$(GOINSTALL) -u github.com/swaggo/swag/cmd/swag@latest
+	@echo "$(GREEN)Dependencies downloaded$(NC)"
 
 .PHONY: test
 test: ## Run all tests
