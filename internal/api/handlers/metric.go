@@ -10,10 +10,10 @@ import (
 )
 
 type MetricHandler struct {
-	service *services.MetricService
+	service services.MetricServiceInterface
 }
 
-func NewMetricHandler(service *services.MetricService) *MetricHandler {
+func NewMetricHandler(service services.MetricServiceInterface) *MetricHandler {
 	return &MetricHandler{service: service}
 }
 

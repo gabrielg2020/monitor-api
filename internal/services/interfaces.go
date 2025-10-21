@@ -15,3 +15,14 @@ type HostServiceInterface interface {
 	UpdateHost(id int64, host *entities.Host) error
 	DeleteHost(id int64) error
 }
+
+// MetricServiceInterface defines methods for metric service operations
+type MetricServiceInterface interface {
+	CreateMetric(metric *entities.SystemMetric) (int64, error)
+	GetMetrics(params *entities.MetricQueryParams) ([]entities.SystemMetric, error)
+	GetLatestMetric(hostID *int64) (*entities.SystemMetric, error)
+}
+
+var _ HealthServiceInterface = (*HealthService)(nil)
+var _ HostServiceInterface = (*HostService)(nil)
+var _ MetricServiceInterface = (*MetricService)(nil)

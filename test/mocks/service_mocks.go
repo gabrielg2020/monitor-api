@@ -56,3 +56,32 @@ func (m *MockHostService) DeleteHost(id int64) error {
 	args := m.Called(id)
 	return args.Error(0)
 }
+
+// MockMetricService is a mock implementation of MetricServiceInterface
+type MockMetricService struct {
+	mock.Mock
+}
+
+// CreateMetric mocks creating a new metric
+func (m *MockMetricService) CreateMetric(metric *entities.SystemMetric) (int64, error) {
+	args := m.Called(metric)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+// GetMetrics mocks getting metrics based on query parameters
+func (m *MockMetricService) GetMetrics(params *entities.MetricQueryParams) ([]entities.SystemMetric, error) {
+	args := m.Called(params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]entities.SystemMetric), args.Error(1)
+}
+
+// GetLatestMetric mocks getting the latest metric for a specific host or all hosts
+func (m *MockMetricService) GetLatestMetric(hostID *int64) (*entities.SystemMetric, error) {
+	args := m.Called(hostID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entities.SystemMetric), args.Error(1)
+}
