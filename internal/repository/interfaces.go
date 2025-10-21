@@ -26,3 +26,4 @@ type MetricRepositoryInterface interface {
 
 var _ HealthRepositoryInterface = (*HealthRepository)(nil)
 var _ HostRepositoryInterface = (*HostRepository)(nil)
+var _ MetricRepositoryInterface = (*MetricRepository)(nil)
