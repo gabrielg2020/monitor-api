@@ -27,7 +27,6 @@ help: ## Show this help message
 deps: ## Download dependencies
 	@echo "$(YELLOW)Downloading dependencies...$(NC)"
 	$(GOMOD) download
-	$(GOMOD) tidy
 
 .PHONY: test-deps
 test-deps: ## Install test dependencies
