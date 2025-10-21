@@ -11,11 +11,9 @@ type HealthRepositoryInterface interface {
 
 // HostRepositoryInterface defines methods for host repository operations
 type HostRepositoryInterface interface {
-	FindAll(limit int) ([]entities.Host, error)
 	FindByFilters(params *entities.HostQueryParams) ([]entities.Host, error)
 	Create(host *entities.Host) (int64, error)
 	Update(id int64, host *entities.Host) error
-	UpdateLastSeen(id int64) error
 	Delete(id int64) error
 }
 

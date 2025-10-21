@@ -10,15 +10,6 @@ type MockHostRepository struct {
 	mock.Mock
 }
 
-// FindAll mocks finding all hosts
-func (mock *MockHostRepository) FindAll(limit int) ([]entities.Host, error) {
-	args := mock.Called(limit)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).([]entities.Host), args.Error(1)
-}
-
 // FindByFilters mocks finding hosts by filters
 func (mock *MockHostRepository) FindByFilters(params *entities.HostQueryParams) ([]entities.Host, error) {
 	args := mock.Called(params)
@@ -37,12 +28,6 @@ func (mock *MockHostRepository) Create(host *entities.Host) (int64, error) {
 // Update mocks updating a host
 func (mock *MockHostRepository) Update(id int64, host *entities.Host) error {
 	args := mock.Called(id, host)
-	return args.Error(0)
-}
-
-// UpdateLastSeen mocks updating the last seen timestamp
-func (mock *MockHostRepository) UpdateLastSeen(id int64) error {
-	args := mock.Called(id)
 	return args.Error(0)
 }
 
