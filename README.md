@@ -1,5 +1,8 @@
 # monitor-api
 
+[![CI](https://github.com/gabrielg2020/monitor-api/actions/workflows/ci.yml/badge.svg)](https://github.com/gabrielg2020/monitor-api/actions/workflows/ci.yml)
+[![CD](https://github.com/gabrielg2020/monitor-api/actions/workflows/cd.yml/badge.svg)](https://github.com/gabrielg2020/monitor-api/actions/workflows/cd.yml)
+
 A REST API for collecting and serving system metrics from homelab clusters. Built with Go and Gin framework.
 
 ## Features
@@ -11,7 +14,7 @@ A REST API for collecting and serving system metrics from homelab clusters. Buil
 - **Health Checks**: Built-in health monitoring endpoint
 - **Docker Ready**: Pre-built container images available
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
