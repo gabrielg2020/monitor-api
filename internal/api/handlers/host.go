@@ -10,10 +10,10 @@ import (
 )
 
 type HostHandler struct {
-	service *services.HostService
+	service services.HostServiceInterface
 }
 
-func NewHostHandler(service *services.HostService) *HostHandler {
+func NewHostHandler(service services.HostServiceInterface) *HostHandler {
 	return &HostHandler{service: service}
 }
 
