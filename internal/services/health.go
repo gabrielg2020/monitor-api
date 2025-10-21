@@ -5,10 +5,10 @@ import (
 )
 
 type HealthService struct {
-	repo *repository.HealthRepository
+	repo repository.HealthRepositoryInterface
 }
 
-func NewHealthService(repo *repository.HealthRepository) *HealthService {
+func NewHealthService(repo repository.HealthRepositoryInterface) *HealthService {
 	return &HealthService{repo: repo}
 }
 
