@@ -19,6 +19,12 @@ jobs:
       - name: Install dependencies
         run: make deps
 
+      - name: Install documentation dependencies
+        run: make docs-deps
+
+      - name: Generate Swagger docs
+        run: make docs
+
       - name: Run Lint
         uses: golangci/golangci-lint-action@v8
         with:
@@ -30,9 +36,3 @@ jobs:
 
       - name: Run unit tests
         run: make test-unit
-
-      - name: Install documentation dependencies
-        run: make docs-deps
-
-      - name: Generate Swagger docs
-        run: make docs

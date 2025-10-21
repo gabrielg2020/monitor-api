@@ -9,7 +9,6 @@ import (
 	"github.com/gabrielg2020/monitor-api/pkg/database"
 	"github.com/gin-gonic/gin"
 
-	//nolint:typecheck // ignore missing docs package for Swagger UI
 	_ "github.com/gabrielg2020/monitor-api/docs"
 	_ "github.com/joho/godotenv/autoload"
 )
