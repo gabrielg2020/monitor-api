@@ -41,7 +41,7 @@ test-deps: ## Install test dependencies
 .PHONY: docs-deps
 docs-deps: ## Install documentation dependencies
 	@echo "$(YELLOW)Installing documentation dependencies...$(NC)"
-	$(GOINSTALL) -u github.com/swaggo/swag/cmd/swag@latest
+	$(GOINSTALL) github.com/swaggo/swag/cmd/swag@latest
 	@echo "$(GREEN)Dependencies downloaded$(NC)"
 
 .PHONY: test
