@@ -82,7 +82,7 @@ func (handler *MetricHandler) Get(ctx *gin.Context) {
 	}
 
 	// Validate and set defaults
-	if errResp := validateAndSetMetricQueryDefaults(&queryParams); errResp != nil {
+	if errResp := setMetricQueryDefaults(&queryParams); errResp != nil {
 		ctx.JSON(400, errResp)
 		return
 	}

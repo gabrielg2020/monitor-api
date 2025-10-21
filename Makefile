@@ -66,7 +66,13 @@ test-repository: ## Run repository layer tests
 	$(GOTEST) -v -timeout $(TEST_TIMEOUT) ./internal/repository/...
 
 .PHONY: test-coverage
-test-coverage: ## Run tests with coverage and enforce coverage threshold
+test-coverage: ## Run tests with coverage
+	@echo "$(YELLOW)Running tests with coverage...$(NC)"
+	$(GOTEST) -v -race -coverprofile=$(COVERAGE_FILE) -covermode=atomic -timeout $(TEST_TIMEOUT) ./...
+	@echo "$(GREEN)Coverage report generated: $(COVERAGE_FILE)$(NC)"
+
+.PHONY: test-coverage-enforced
+test-coverage-enforced: ## Run tests with coverage and enforce coverage threshold
 	@echo "$(YELLOW)Running tests with coverage check...$(NC)"
 	$(GOTEST) -coverprofile=$(COVERAGE_FILE) ./...
 	@COVERAGE=$$(go tool cover -func=$(COVERAGE_FILE) | grep total: | awk '{print substr($$3, 1, length($$3)-1)}'); \

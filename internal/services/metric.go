@@ -6,20 +6,31 @@ import (
 )
 
 type MetricService struct {
-	repo *repository.MetricRepository
+	repo repository.MetricRepositoryInterface
 }
 
-func NewMetricService(repo *repository.MetricRepository) *MetricService {
+func NewMetricService(repo repository.MetricRepositoryInterface) *MetricService {
 	return &MetricService{repo: repo}
 }
 
 // CreateMetric stores a new metric record
 func (service *MetricService) CreateMetric(metric *entities.SystemMetric) (int64, error) {
+	if err := ValidateSystemMetric(metric); err != nil {
+		return -1, err
+	}
 	return service.repo.Create(metric)
 }
 
 // GetMetrics retrieves metrics based on query parameters
 func (service *MetricService) GetMetrics(params *entities.MetricQueryParams) ([]entities.SystemMetric, error) {
+	if params == nil {
+		return nil, ErrNilQueryParams
+	}
+
+	if *params.HostID <= 0 {
+		return nil, ErrInvalidHostID
+	}
+
 	return service.repo.FindByFilters(params)
 }
 

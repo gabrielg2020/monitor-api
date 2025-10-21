@@ -9,7 +9,7 @@ type HealthRepositoryInterface interface {
 	GetTableCounts() (map[string]int, error)
 }
 
-// HostRepositoryInterface defines the contract for host repository operations
+// HostRepositoryInterface defines methods for host repository operations
 type HostRepositoryInterface interface {
 	FindAll(limit int) ([]entities.Host, error)
 	FindByFilters(params *entities.HostQueryParams) ([]entities.Host, error)
@@ -17,6 +17,13 @@ type HostRepositoryInterface interface {
 	Update(id int64, host *entities.Host) error
 	UpdateLastSeen(id int64) error
 	Delete(id int64) error
+}
+
+// MetricRepositoryInterface defines methods for metric repository operations
+type MetricRepositoryInterface interface {
+	FindByFilters(params *entities.MetricQueryParams) ([]entities.SystemMetric, error)
+	FindLatest(hostID *int64) (*entities.SystemMetric, error)
+	Create(metric *entities.SystemMetric) (int64, error)
 }
 
 var _ HealthRepositoryInterface = (*HealthRepository)(nil)

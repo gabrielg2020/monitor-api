@@ -7,8 +7,8 @@ import (
 	"github.com/gabrielg2020/monitor-api/internal/models"
 )
 
-// validateAndSetMetricQueryDefaults validates and sets defaults for metric query params
-func validateAndSetMetricQueryDefaults(params *entities.MetricQueryParams) *models.ErrorResponse {
+// setMetricQueryDefaults validates and sets defaults for metric query params
+func setMetricQueryDefaults(params *entities.MetricQueryParams) *models.ErrorResponse {
 	// Set defaults
 	if params.Limit == 0 {
 		params.Limit = 100

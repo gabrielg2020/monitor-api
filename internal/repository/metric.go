@@ -122,7 +122,7 @@ func (repo *MetricRepository) Create(metric *entities.SystemMetric) (int64, erro
 	)
 
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 
 	return result.LastInsertId()

@@ -34,4 +34,4 @@ jobs:
         run: make test-deps
 
       - name: Run unit tests
-        run: make test-coverage
+        run: make test-coverage-enforced
