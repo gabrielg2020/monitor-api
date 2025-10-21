@@ -2,6 +2,7 @@
 GOCMD=go
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
+GOINSTALL=$(GOCMD) install
 GOMOD=$(GOCMD) mod
 BINARY_NAME=monitor-api
 
@@ -40,11 +41,11 @@ test-deps: ## Install test dependencies
 .PHONY: tool-deps
 tool-deps: ## Install tool dependencies
 	@echo "$(YELLOW)Installing tool dependencies...$(NC)"
-	$(GOGET) -u github.com/golangci/golangci-lint/cmd
-	$(GOGET) -u github.com/swaggo/swag/cmd/swag
-	$(GOGET) -u github.com/swaggo/gin-swagger
-	$(GOGET) -u github.com/swaggo/file
-	@echo "$(GREEN)Linter tool installed$(NC)"
+	sudo apt-get install -y golangci-lint
+	$(GOINSTALL) -u github.com/swaggo/swag/cmd/swag
+	$(GOINSTALL) -u github.com/swaggo/gin-swagger
+	$(GOINSTALL) -u github.com/swaggo/file
+	@echo "$(GREEN)Tools installed$(NC)"
 
 .PHONY: test
 test: ## Run all tests
