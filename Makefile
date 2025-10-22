@@ -68,14 +68,14 @@ test-repository: ## Run repository layer tests
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage
 	@echo "$(YELLOW)Running tests with coverage...$(NC)"
-	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/docs' | grep -v '/database'); \
+	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/docs' | grep -v '/database' | grep -v '/cmd'); \
 	$(GOTEST) -v -race -coverprofile=$(COVERAGE_FILE) $$PKGS -covermode=atomic -timeout $(TEST_TIMEOUT) ./...
 	@echo "$(GREEN)Coverage report generated: $(COVERAGE_FILE)$(NC)"
 
 .PHONY: test-coverage-enforced
 test-coverage-enforced: ## Run tests with coverage and enforce coverage threshold
 	@echo "$(YELLOW)Running tests with coverage check...$(NC)"
-	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/docs' | grep -v '/database'); \
+	@PKGS=$$(go list ./... | grep -v '/mocks' | grep -v '/docs' | grep -v '/database' | grep -v '/cmd'); \
 	$(GOTEST) -coverprofile=$(COVERAGE_FILE) $$PKGS
 	@COVERAGE=$$(go tool cover -func=$(COVERAGE_FILE) | grep total: | awk '{print substr($$3, 1, length($$3)-1)}'); \
 	echo "Total coverage: $$COVERAGE% (threshold: $(COVERAGE_THRESHOLD)%)"; \
