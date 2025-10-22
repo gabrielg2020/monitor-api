@@ -60,12 +60,13 @@ func Load() (*Config, error) {
 }
 
 func parseAllowedOrigins(originsStr string) []string {
-	if originsStr == "" {
+	trimmed := strings.TrimSpace(originsStr)
+	if trimmed == "" {
 		return []string{"http://localhost"}
 	}
 
 	var origins []string
-	for _, origin := range splitAndTrim(originsStr, ",") {
+	for _, origin := range splitAndTrim(trimmed, ",") {
 		if origin != "" {
 			origins = append(origins, origin)
 		}

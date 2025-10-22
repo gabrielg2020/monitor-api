@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  go-lint:
-    name: Lint Go Code
+  go:
+    name: Go CI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,14 +16,13 @@ jobs:
         with:
           go-version: '1.25'
 
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Install Swag
-        run: go install github.com/swaggo/swag/cmd/swag@latest
-
       - name: Generate Swagger docs
-        run: swag init -g cmd/main.go -o docs --parseDependency --parseInternal --useStructName
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+          swag init -g cmd/main.go -o docs --parseDependency --parseInternal --useStructName
+
+      - name: Install dependencies
+        run: make deps
 
       - name: Run Lint
         uses: golangci/golangci-lint-action@v8
@@ -31,8 +30,9 @@ jobs:
           version: latest
           args: --timeout 10m
 
-      - name: Run tests
-        run: go test -v ./...
 
-      - name: Build
-        run: go build -o bin/monitor-api cmd/main.go
+      - name: Install test dependencies
+        run: make test-deps
+
+      - name: Run unit tests
+        run: make test-coverage-enforced

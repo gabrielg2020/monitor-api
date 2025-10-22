@@ -1,5 +1,12 @@
 # monitor-api
 
+[![CI](https://github.com/gabrielg2020/monitor-api/actions/workflows/ci.yml/badge.svg)](https://github.com/gabrielg2020/monitor-api/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gabrielg2020/monitor-api)](https://goreportcard.com/report/github.com/gabrielg2020/monitor-api)
+[![Latest Release (pre-releases included)](https://img.shields.io/github/v/release/gabrielg2020/monitor-api?include_prereleases&logo=github)](https://github.com/gabrielg2020/monitor-api/releases)
+![Go Version](https://img.shields.io/github/go-mod/go-version/gabrielg2020/monitor-api)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- TODO: need to update cd workflow to show as passing! [![CD](https://github.com/gabrielg2020/monitor-api/actions/workflows/cd.yml/badge.svg)](https://github.com/gabrielg2020/monitor-api/actions/workflows/cd.yml) -->
+
 A REST API for collecting and serving system metrics from homelab clusters. Built with Go and Gin framework.
 
 ## Features
@@ -11,7 +18,7 @@ A REST API for collecting and serving system metrics from homelab clusters. Buil
 - **Health Checks**: Built-in health monitoring endpoint
 - **Docker Ready**: Pre-built container images available
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)

@@ -15,28 +15,6 @@ func NewHostRepository(db *sql.DB) *HostRepository {
 	return &HostRepository{db: db}
 }
 
-// FindAll retrieves all hosts
-func (repo *HostRepository) FindAll(limit int) ([]entities.Host, error) {
-	query := `SELECT id, hostname, ip_address, role FROM hosts`
-
-	if limit > 0 {
-		query += ` LIMIT ?`
-		rows, err := repo.db.Query(query, limit)
-		if err != nil {
-			return nil, err
-		}
-		defer closeRows(rows)
-		return repo.scanHosts(rows)
-	}
-
-	rows, err := repo.db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer closeRows(rows)
-	return repo.scanHosts(rows)
-}
-
 // FindByFilters retrieves hosts based on query parameters
 func (repo *HostRepository) FindByFilters(params *entities.HostQueryParams) ([]entities.Host, error) {
 	querySQL := `
@@ -101,14 +79,6 @@ func (repo *HostRepository) Update(id int64, host *entities.Host) error {
 		WHERE id = ?`
 
 	_, err := repo.db.Exec(updateSQL, host.Role, timestamp, id)
-	return err
-}
-
-// UpdateLastSeen updates the last_seen timestamp
-func (repo *HostRepository) UpdateLastSeen(id int64) error {
-	timestamp := time.Now().Unix()
-	updateSQL := `UPDATE hosts SET last_seen = ? WHERE id = ?`
-	_, err := repo.db.Exec(updateSQL, timestamp, id)
 	return err
 }
 

@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/gabrielg2020/monitor-api/internal/api/handlers"
 	"github.com/gabrielg2020/monitor-api/internal/middleware"
@@ -13,7 +14,12 @@ import (
 )
 
 // SetupRouter initialises the router with all routes and middleware
-func SetupRouter(db *sql.DB, allowedOrigins []string) *gin.Engine {
+func SetupRouter(
+	healthHandler handlers.HealthHandlerInterface,
+	hostHandler handlers.HostHandlerInterface,
+	metricHandler handlers.MetricHandlerInterface,
+	allowedOrigins []string,
+) *gin.Engine {
 	router := gin.New()
 
 	// Middleware
@@ -21,20 +27,15 @@ func SetupRouter(db *sql.DB, allowedOrigins []string) *gin.Engine {
 	router.Use(gin.Recovery())
 	router.Use(middleware.CORS(allowedOrigins))
 
-	// Initialise repositories
-	healthRepo := repository.NewHealthRepository(db)
-	hostRepo := repository.NewHostRepository(db)
-	metricRepo := repository.NewMetricRepository(db)
+	// 405 responses for known routes with unsupported methods
+	router.HandleMethodNotAllowed = true
 
-	// Initialise services
-	healthService := services.NewHealthService(healthRepo)
-	hostService := services.NewHostService(hostRepo)
-	metricService := services.NewMetricService(metricRepo)
-
-	// Initialise handlers
-	healthHandler := handlers.NewHealthHandler(healthService)
-	hostHandler := handlers.NewHostHandler(hostService)
-	metricHandler := handlers.NewMetricHandler(metricService)
+	router.NoMethod(func(c *gin.Context) {
+		c.JSON(http.StatusMethodNotAllowed, gin.H{
+			"error":   "Method Not Allowed",
+			"details": "The method is not allowed for the requested URL.",
+		})
+	})
 
 	// Health endpoints
 	router.GET("/health", healthHandler.GetHealth)
@@ -65,4 +66,25 @@ func SetupRouter(db *sql.DB, allowedOrigins []string) *gin.Engine {
 	}
 
 	return router
+}
+
+// SetupRouterWithDB is a convenience function for production use
+// that creates handlers from a database connection
+func SetupRouterWithDB(db *sql.DB, allowedOrigins []string) *gin.Engine {
+	// Initialise repositories
+	healthRepo := repository.NewHealthRepository(db)
+	hostRepo := repository.NewHostRepository(db)
+	metricRepo := repository.NewMetricRepository(db)
+
+	// Initialise services
+	healthService := services.NewHealthService(healthRepo)
+	hostService := services.NewHostService(hostRepo)
+	metricService := services.NewMetricService(metricRepo)
+
+	// Initialise handlers
+	healthHandler := handlers.NewHealthHandler(healthService)
+	hostHandler := handlers.NewHostHandler(hostService)
+	metricHandler := handlers.NewMetricHandler(metricService)
+
+	return SetupRouter(healthHandler, hostHandler, metricHandler, allowedOrigins)
 }

@@ -6,3 +6,9 @@ type Host struct {
 	IPAddress string `json:"ip_address" db:"ip_address"`
 	Role      string `json:"role" db:"role"`
 }
+
+type HostQueryParams struct {
+	ID        int64  `form:"id"`
+	Hostname  string `form:"hostname"`
+	IPAddress string `form:"ip_address"`
+}
