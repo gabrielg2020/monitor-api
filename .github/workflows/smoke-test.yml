@@ -1,0 +1,61 @@
+name: Smoke Test
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Smoke Tests
+        run: |
+          echo "Running smoke tests..."
+          
+          # Create a temporary directory for the test database
+          mkdir -p /tmp/smoke-test-db
+          
+          # Start the container
+          docker-run -d \
+            --name smoke-test \
+            -p 8191:8191 \
+            -e PORT=8191 \
+            -e DB_PATH=/data/smoke-test.db \
+            -e GIN_MODE=release \
+            -e ALLOW_ORIGINS='*' \
+            ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+          
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -f -s http://localhost:8191/health > /dev/null 2>&1; then
+              echo "✓ App is ready!"
+              break
+            fi
+      
+            attempt=$((attempt + 1))
+            echo "Attempt $attempt/$max_attempts - waiting..."
+            sleep 2
+          done
+          
+          if [ $elapsed -ge $timeout ]; then
+            echo "× App failed to become healthy"
+            docker compose -f smoke-test-compose.yml logs
+            docker compose -f smoke-test-compose.yml down -v
+            exit 1
+          fi
+          
+          # Run smoke tests
+          echo "Running smoke tests..."
+    
+          curl -f http://localhost:8191/health || exit 1
+          echo "✓ Health check passed"
+    
+          # Cleanup
+          docker compose -f smoke-test-compose.yml down -v
+    
+          echo "✓ All smoke tests passed!"
+          
+          exit 0
