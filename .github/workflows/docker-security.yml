@@ -1,0 +1,31 @@
+name: Docker Security Scan
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  security-scan:
+    name: Docker Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@0.33.0
+        with:
+          image-ref: 'ghcr.io/${{ env.IMAGE_NAME }}:latest'
+          format: 'sarif'
+          output: 'trivy-report.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Upload results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+

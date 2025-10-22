@@ -16,3 +16,7 @@ jobs:
   docker:
     name: Docker Workflow
     uses: ./.github/workflows/docker.yml
+
+  docker-security:
+    name: Docker Security Scan
+    uses: ./.github/workflows/docker-security.yml
