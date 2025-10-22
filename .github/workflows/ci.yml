@@ -16,3 +16,7 @@ jobs:
   docker:
     name: Docker Workflow
     uses: ./.github/workflows/docker.yml
+
+  smoke-test:
+    name: Smoke Test Workflow
+    uses: ./.github/workflows/smoke-test.yml

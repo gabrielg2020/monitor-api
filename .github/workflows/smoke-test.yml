@@ -1,0 +1,69 @@
+name: Smoke Test
+
+on:
+  workflow_call:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Smoke Tests
+        run: |
+          echo "Running smoke tests..."
+          attempt=0
+          max_attempts=5
+          
+          # Create a temporary directory for the test database
+          mkdir -p /tmp/smoke-test-db
+          
+          # Start the container
+          docker run --platform linux/arm64 -d \
+            --name smoke-test \
+            -p 8191:8191 \
+            -e PORT=8191 \
+            -e DB_PATH=/data/smoke-test.db \
+            -e GIN_MODE=release \
+            -e ALLOW_ORIGINS='*' \
+            ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
+          
+          # Wait for the app to be healthy
+          echo "Waiting for app to become healthy..."
+          sleep 5
+          
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -f -s http://localhost:8191/health > /dev/null 2>&1; then
+              echo "✓ App is ready!"
+              break
+            fi
+      
+            attempt=$((attempt + 1))
+            echo "Attempt $attempt/$max_attempts - waiting..."
+            sleep 2
+          done
+          
+          if [ $attempt -eq $max_attempts ]; then
+            echo "× App failed to become healthy after $max_attempts attempts"
+            docker logs smoke-test
+            docker stop smoke-test
+            docker rm smoke-test
+            exit 1
+          fi
+          
+          # Run smoke tests
+          echo "Running smoke tests..."
+    
+          curl -f http://localhost:8191/health || exit 1
+          echo "✓ Health check passed"
+    
+          # Cleanup
+          docker stop smoke-test
+          docker rm smoke-test
+    
+          echo "✓ All smoke tests passed!"
+          
+          exit 0
