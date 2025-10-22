@@ -27,7 +27,7 @@ func (service *MetricService) GetMetrics(params *entities.MetricQueryParams) ([]
 		return nil, ErrNilQueryParams
 	}
 
-	if *params.HostID <= 0 {
+	if params != nil && *params.HostID <= 0 {
 		return nil, ErrInvalidHostID
 	}
 

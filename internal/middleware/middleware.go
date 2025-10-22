@@ -7,7 +7,12 @@ import (
 // CORS returns a middleware that handles CORS
 func CORS(allowedOrigins []string) gin.HandlerFunc {
 	originsMap := make(map[string]bool)
+	hasWildcard := false
+
 	for _, origin := range allowedOrigins {
+		if origin == "*" {
+			hasWildcard = true
+		}
 		originsMap[origin] = true
 	}
 
@@ -15,7 +20,9 @@ func CORS(allowedOrigins []string) gin.HandlerFunc {
 		origin := c.Request.Header.Get("Origin")
 
 		// Check if origin is allowed
-		if originsMap[origin] {
+		if hasWildcard {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		} else if originsMap[origin] {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
 

@@ -52,7 +52,7 @@ func main() {
 	}()
 
 	// Setup router with all routes
-	router := api.SetupRouter(db, cfg.CORS.AllowedOrigins)
+	router := api.SetupRouterWithDB(db, cfg.CORS.AllowedOrigins)
 
 	// Start server
 	addr := ":" + cfg.Server.Port
