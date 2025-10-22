@@ -31,7 +31,8 @@ jobs:
             -e ALLOW_ORIGINS='*' \
             ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
           
-          # Wait for the app to be ready
+          # Wait for the app to be healthy
+          echo "Waiting for app to become healthy..."
           sleep 5
           
           while [ $attempt -lt $max_attempts ]; do
@@ -45,8 +46,11 @@ jobs:
             sleep 2
           done
           
-          if [ $elapsed -ge $timeout ]; then
-            echo "× App failed to become healthy"
+          if [ $attempt -eq $max_attempts ]; then
+            echo "× App failed to become healthy after $max_attempts attempts"
+            docker logs smoke-test
+            docker stop smoke-test
+            docker rm smoke-test
             exit 1
           fi
           
