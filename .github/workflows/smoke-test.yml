@@ -15,6 +15,8 @@ jobs:
       - name: Run Smoke Tests
         run: |
           echo "Running smoke tests..."
+          attempt=0
+          max_attempts=5
           
           # Create a temporary directory for the test database
           mkdir -p /tmp/smoke-test-db
@@ -29,6 +31,9 @@ jobs:
             -e ALLOW_ORIGINS='*' \
             ${{env.REGISTRY}}/${{ env.IMAGE_NAME }}:latest
           
+          # Wait for the app to be ready
+          sleep 5
+          
           while [ $attempt -lt $max_attempts ]; do
             if curl -f -s http://localhost:8191/health > /dev/null 2>&1; then
               echo "✓ App is ready!"
@@ -42,8 +47,6 @@ jobs:
           
           if [ $elapsed -ge $timeout ]; then
             echo "× App failed to become healthy"
-            docker compose -f smoke-test-compose.yml logs
-            docker compose -f smoke-test-compose.yml down -v
             exit 1
           fi
           
@@ -54,7 +57,8 @@ jobs:
           echo "✓ Health check passed"
     
           # Cleanup
-          docker compose -f smoke-test-compose.yml down -v
+          docker stop smoke-test
+          docker rm smoke-test
     
           echo "✓ All smoke tests passed!"
           
